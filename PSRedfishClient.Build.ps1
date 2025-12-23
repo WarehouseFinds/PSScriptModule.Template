@@ -202,7 +202,8 @@ task UpdatePackageSpecification GenerateNewModuleVersion, {
 }
 
 # Synopsis: Build the project
-task Build UpdateModuleManifest, UpdatePackageSpecification, {
+#task Build UpdateModuleManifest, UpdatePackageSpecification, {
+task Build {
     # Warning on local builds
     if ($Configuration -eq 'Debug') {
         Write-Warning "Creating a debug build. Use it for test purpose only!!!"

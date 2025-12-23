@@ -1,15 +1,11 @@
 @{
-    GUID                 = 'd3f1a5d6-0000-4000-8000-000000000001'
+    GUID                 = 'a620849b-e411-460a-86ef-4c9e82a170ee'
     ModuleVersion        = '0.1.0'
     Author               = 'Marko Stanojevic'
     CompanyName          = ''
     Copyright            = '(c) Warehouse Finds'
     Description          = 'PowerShell client helpers for Redfish APIs.'
-    RootModule           = 'PSRedfishClient.psd1'
-    FunctionsToExport    = @()
-    CmdletsToExport      = @()
-    VariablesToExport    = @()
-    AliasesToExport      = @()
+    RootModule           = 'PSRedfishClient.psm1'
     PrivateData          = @{
         PSData = @{
             Tags         = @('Redfish', 'REST', 'Hardware')
