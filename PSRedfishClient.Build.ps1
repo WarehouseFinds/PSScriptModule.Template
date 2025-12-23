@@ -179,9 +179,8 @@ task GenerateNewModuleVersion -If ($Configuration -eq 'Release') {
 task UpdateModuleManifest GenerateNewModuleVersion, {
     # Update-ModuleManifest parameters
     $Params = @{
-        Path              = $moduleManifestPath
-        ModuleVersion     = $newModuleVersion
-        FunctionsToExport = $functionsToExport
+        Path          = $moduleManifestPath
+        ModuleVersion = $newModuleVersion
     }
 
     # Update the manifest file
