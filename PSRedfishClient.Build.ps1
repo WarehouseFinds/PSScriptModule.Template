@@ -210,14 +210,13 @@ task Build {
     }
 
     # Create versioned output folder
-    $moduleOutputPath = Join-Path -Path $buildOutputPath -ChildPath $moduleName -AdditionalChildPath $newModuleVersion
-    if (-not (Test-Path $moduleOutputPath)) {
-        New-Item -Path $moduleOutputPath -ItemType Directory
+    if (-not (Test-Path $buildOutputPath)) {
+        New-Item -Path $buildOutputPath -ItemType Directory
     }
 
     # Copy-Item parameters
     Import-Module ModuleBuilder -ErrorAction Stop
-    Build-Module -Path $moduleSourcePath -OutputDirectory $moduleOutputPath -ErrorAction Stop
+    Build-Module -Path $moduleSourcePath -OutputDirectory $buildOutputPath -ErrorAction Stop
 }
 
 # Synopsis: Verify the code coverage by tests

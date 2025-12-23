@@ -6,6 +6,7 @@
     Copyright            = '(c) Warehouse Finds'
     Description          = 'PowerShell client helpers for Redfish APIs.'
     RootModule           = 'PSRedfishClient.psm1'
+    FunctionsToExport    = @()
     PrivateData          = @{
         PSData = @{
             Tags         = @('Redfish', 'REST', 'Hardware')
