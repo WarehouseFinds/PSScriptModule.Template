@@ -1,9 +1,21 @@
-mode: mainline
-tag-prefix: '[vV]?'
-assembly-informational-format: '{Major}.{Minor}.{Patch}'
-major-version-bump-message: '\+semver:\s?(breaking|major)'
-minor-version-bump-message: '\+semver:\s?(feature|minor)'
-patch-version-bump-message: '\+semver:\s?(fix|patch)'
+mode: Mainline
+major-version-bump-message: '\s?(breaking|major|breaking\schange)'
+minor-version-bump-message: '(adds?|features?|minor)\b'
+patch-version-bump-message: '\s?(fix|patch)'
 no-bump-message: '\+semver:\s?(none|skip)'
-commit-message-incrementing: Enabled
-update-build-number: true
+branches:
+  main:
+    tag: 
+    increment: Patch
+    regex: ^master$|^main$
+  feature:
+    tag: preview
+    increment: Minor
+    regex: ^features?[/-]
+  hotfix:
+    tag: preview
+    increment: Patch
+    regex: ^hotfix(es)?[/-]|^patch?[/-]
+  support:
+    tag: preview
+    increment: Patch
