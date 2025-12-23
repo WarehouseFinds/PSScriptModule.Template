@@ -1,4 +1,6 @@
-mode: ManualDeployment
+mode: mainline
+assembly-versioning-scheme: MajorMinorPatch
+commit-message-incrementing: Enabled
 major-version-bump-message: '\s?(breaking|major|breaking\schange)'
 minor-version-bump-message: '(adds?|feature?|minor)\b'
 patch-version-bump-message: '\s?(fix|patch)'
