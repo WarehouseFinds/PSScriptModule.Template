@@ -47,11 +47,6 @@ jobs:
           echo "FullSemVer (env.fullSemVer)            : ${{ env.fullSemVer }}"
         name: Display GitVersion variables (without prefix)
 
-      - run: |
-          echo "GitVersion.FullSemVer = $(GitVersion.FullSemVer)"
-          echo "GitVersion.SemVer = $(GitVersion.SemVer)"
-        name: 'View Version'
-
       - name: Ensure PowerShell modules (PSDepend, InvokeBuild, Pester, ModuleBuilder, PSScriptAnalyzer, InjectionHunter) are installed
         shell: pwsh
         run: |
