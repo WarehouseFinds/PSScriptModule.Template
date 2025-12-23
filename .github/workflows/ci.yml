@@ -29,14 +29,6 @@ jobs:
               Install-Module -Name $m -Scope CurrentUser -Force -AllowClobber -ErrorAction Stop
             }
           }
-      - name: Run compile via ModuleBuilder
-        shell: pwsh
-        run: |
-          $VerbosePreference = 'Continue'
-          Set-StrictMode -Version Latest
-          Import-Module ModuleBuilder -ErrorAction Stop
-          Write-Host (Get-Location)
-          Build-Module -Path .\src\ -OutputDirectory .\build -ErrorAction Stop
 
       - name: Run build via Invoke-Build
         shell: pwsh

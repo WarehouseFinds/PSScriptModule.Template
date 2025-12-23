@@ -239,16 +239,8 @@ task Build UpdateModuleManifest, UpdatePackageSpecification, {
     }
 
     # Copy-Item parameters
-    $Params = @{
-        Path        = "$moduleSourcePath\*"
-        Destination = $moduleOutputPath
-        Exclude     = "*.Tests.*", "*.PSSATests.*"
-        Recurse     = $true
-        Force       = $true
-    }
-
-    # Copy module files to the target build folder
-    Copy-Item @Params
+    Import-Module ModuleBuilder -ErrorAction Stop
+    Build-Module -Path $moduleSourcePath -OutputDirectory $moduleOutputPath -ErrorAction Stop
 }
 
 # Synopsis: Verify the code coverage by tests
