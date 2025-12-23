@@ -8,6 +8,7 @@ tag-prefix: '[vV]?'
 tag-pre-release-weight: 60000
 branches:
   main:
+    mode: ManualDeployment
     label: ''
     increment: Patch
     regex: ^master$|^main$
@@ -28,3 +29,18 @@ branches:
     is-release-branch: true
     is-main-branch: false
     pre-release-weight: 55000
+  pull-request:
+    mode: ContinuousDelivery
+    label: PullRequest{Number}
+    increment: Inherit
+    prevent-increment:
+      of-merged-branch: true
+      when-current-commit-tagged: false
+    track-merge-message: true
+    regex: ^(pull-requests|pull|pr)[\/-](?<Number>\d*)
+    source-branches:
+    - main
+    - release
+    - feature
+    is-source-branch-for: []
+    pre-release-weight: 30000
