@@ -35,7 +35,7 @@ jobs:
           $VerbosePreference = 'Continue'
           Set-StrictMode -Version Latest
           Import-Module ModuleBuilder -ErrorAction Stop
-          # Run the repository build script using Invoke-Build; the script defines tasks
+          Write-Host (Get-Location)
           Build-Module -Path .\src\ -OutputDirectory .\build -ErrorAction Stop
 
       - name: Run build via Invoke-Build
@@ -45,6 +45,7 @@ jobs:
           Set-StrictMode -Version Latest
           Import-Module InvokeBuild -ErrorAction Stop
           # Run the repository build script using Invoke-Build; the script defines tasks
+          Write-Host (Get-Location)
           Invoke-Build -Configuration Debug
 
       - name: Upload build artifacts (if any)
