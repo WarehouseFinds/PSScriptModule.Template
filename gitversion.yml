@@ -1,4 +1,5 @@
 
+mode: ManualDeployment
 assembly-informational-format: "{SemVer}-build-{CommitDate:yyyy-MM-dd}"
 major-version-bump-message: '\s?(breaking|major|breaking\schange)'
 minor-version-bump-message: '(adds?|feature?|minor)\b'
@@ -8,39 +9,15 @@ tag-prefix: '[vV]?'
 tag-pre-release-weight: 60000
 branches:
   main:
-    mode: ManualDeployment
     label: ''
     increment: Patch
     regex: ^master$|^main$
-    is-release-branch: true
-    is-main-branch: true
   feature:
     label: feature
     increment: Minor
     regex: ^features?[/-]
-    is-release-branch: false
-    is-main-branch: false
-    pre-release-weight: 30000
   hotfix:
     mode: ManualDeployment
     label: hotfix
     increment: Patch
     regex: ^hotfix(es)?[/-]|^patch?[/-]
-    is-release-branch: true
-    is-main-branch: false
-    pre-release-weight: 55000
-  pull-request:
-    mode: ContinuousDelivery
-    label: PullRequest{Number}
-    increment: Inherit
-    prevent-increment:
-      of-merged-branch: true
-      when-current-commit-tagged: false
-    track-merge-message: true
-    regex: ^(pull-requests|pull|pr)[\/-](?<Number>\d*)
-    source-branches:
-    - main
-    - release
-    - feature
-    is-source-branch-for: []
-    pre-release-weight: 30000

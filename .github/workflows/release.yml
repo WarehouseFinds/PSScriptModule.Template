@@ -34,8 +34,8 @@ jobs:
       - name: Install GitVersion
         uses: gittools/actions/gitversion/setup@v4.2.0
         with:
-          versionSpec: '6.5.x'
-          preferLatestVersion: true
+          versionSpec: '6.5.1'
+          preferLatestVersion: false
 
       - name: Determine Version
         id: version_step # step id used as a reference for output values
