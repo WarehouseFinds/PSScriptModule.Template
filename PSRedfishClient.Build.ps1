@@ -39,7 +39,7 @@ Enter-Build {
 
     # Setting build script variables
     $script:moduleName = 'PSRedfishClient'
-    $script:moduleSourcePath = Join-Path -Path $BuildRoot -ChildPath $moduleName
+    $script:moduleSourcePath = Join-Path -Path $BuildRoot -ChildPath 'src'
     $script:moduleManifestPath = Join-Path -Path $moduleSourcePath -ChildPath "$moduleName.psd1"
     $script:nuspecPath = Join-Path -Path $moduleSourcePath -ChildPath "$moduleName.nuspec"
     $script:buildOutputPath = Join-Path -Path $BuildRoot -ChildPath 'build'
