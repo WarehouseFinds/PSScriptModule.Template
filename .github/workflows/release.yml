@@ -1,4 +1,5 @@
 name: Release
+run-name: Release - ${{ github.ref_name }} - ${{ github.run_number }} by ${{ github.actor }}
 
 on:
   workflow_dispatch:

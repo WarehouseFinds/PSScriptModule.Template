@@ -14,7 +14,6 @@ branches:
     regex: ^master$|^main$
     is-release-branch: true
     is-main-branch: true
-    pre-release-weight: 55000
   feature:
     label: feature
     increment: Minor
