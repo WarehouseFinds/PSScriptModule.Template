@@ -48,6 +48,9 @@ jobs:
           Import-Module InvokeBuild -ErrorAction Stop
           Write-Host (Get-Location)
           Invoke-Build -Task Test
+          $location = Get-Location
+          $files = Get-ChildItem -Path "$location/coverage" -Recurse
+          Write-Host $files
 
       - name: Upload Coverage XML
         uses: actions/upload-artifact@v4
