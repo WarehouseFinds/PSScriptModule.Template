@@ -52,12 +52,12 @@ jobs:
           $files = Get-ChildItem -Path "$location/coverage" -Recurse
           Write-Host $files
 
-      #- name: Upload Coverage XML
-      #  uses: actions/upload-artifact@v4
-      #  with:
-      #    name: coverage
-      #    path: ${{ github.workspace }}/coverage/coverage.xml
-      #    retention-days: 5
+      - name: Upload Coverage XML
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: ${{ github.workspace }}/coverage/coverage.xml
+          retention-days: 5
 
       - name: Code Coverage Report
         uses: irongut/CodeCoverageSummary@v1.3.0
