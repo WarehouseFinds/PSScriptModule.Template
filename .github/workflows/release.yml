@@ -1,5 +1,7 @@
 name: Release
 run-name: '${{ github.run_id }} - Release Workflow - ${{ github.ref_name }}'
+permissions:
+  contents: read
 on:
   workflow_dispatch:
     inputs:
