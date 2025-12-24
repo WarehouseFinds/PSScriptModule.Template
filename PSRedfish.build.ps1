@@ -82,7 +82,7 @@ task Analyze {
 
 # Synopsis: Test the project with Pester tests
 task Test {
-    $files = Get-ChildItem -Path $moduleSourcePath -Recurse -Force -Include '*.ps1' -Exclude '*.Tests.ps1', '*.psd1' |
+    $files = Get-ChildItem -Path $moduleSourcePath -Recurse -Force -Include '*.ps1' -Exclude '*.Tests.ps1', '*build.ps1' |
     Select-Object -ExpandProperty FullName
     
     $Config = New-PesterConfiguration @{
@@ -107,8 +107,6 @@ task Test {
 
     # Invoke all tests
     Invoke-Pester -Configuration $Config -Verbose
-
-
 }
 
 # Synopsis: Generate a new module version if creating a release build
