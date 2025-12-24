@@ -13,7 +13,7 @@ BeforeAll {
 
 Describe "'$moduleName' Module Tests" {
 
-  Context 'Module Setup' {
+  Context 'Module Setup Tests' {
     It "should have a root module" {
       Test-Path $modulePath | Should -Be $true
     }
@@ -63,14 +63,14 @@ if (Test-Path -Path "$here\Public\*.ps1") {
 
 Describe "'<_>' Function Tests" -ForEach $functionPaths {
   BeforeDiscovery {
-      # Required in order to populate $parameters during discovery to find all parameters
-      # Getting function
-      $AbstractSyntaxTree = [System.Management.Automation.Language.Parser]::ParseInput((Get-Content -raw $_), [ref]$null, [ref]$null)
-      $AstSearchDelegate = { $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }
-      $ParsedFunction = $AbstractSyntaxTree.FindAll( $AstSearchDelegate, $true ) | Where-Object Name -eq $_.BaseName
+    # Required in order to populate $parameters during discovery to find all parameters
+    # Getting function
+    $AbstractSyntaxTree = [System.Management.Automation.Language.Parser]::ParseInput((Get-Content -raw $_), [ref]$null, [ref]$null)
+    $AstSearchDelegate = { $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }
+    $ParsedFunction = $AbstractSyntaxTree.FindAll( $AstSearchDelegate, $true ) | Where-Object Name -eq $_.BaseName
 
-      # Getting the list of function parameters
-      $parameters = @($ParsedFunction.Body.ParamBlock.Parameters.name.VariablePath.Foreach{ $_.ToString() })
+    # Getting the list of function parameters
+    $parameters = @($ParsedFunction.Body.ParamBlock.Parameters.name.VariablePath.Foreach{ $_.ToString() })
   }
 
   BeforeAll {
@@ -126,7 +126,7 @@ Describe "'<_>' Function Tests" -ForEach $functionPaths {
     }
 
     $parameters | ForEach-Object {
-      It "should have descriptive help for '<parameter>' parameter" -TestCases @{parameter = $_} {
+      It "should have descriptive help for '<parameter>' parameter" -TestCases @{parameter = $_ } {
         $functionHelp.Parameters.($parameter.ToUpper()) | Should -Not -BeNullOrEmpty
         $functionHelp.Parameters.($parameter.ToUpper()).Length | Should -BeGreaterThan 25
       }

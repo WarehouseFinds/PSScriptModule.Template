@@ -52,9 +52,7 @@ jobs:
           configFilePath: gitversion.yml
 
       - run: |
-          echo "FullSemVer (env.fullSemVer): ${{ env.fullSemVer }}"
-          echo "SemVer (env.SemVer): ${{ env.SemVer }}"
-          echo "AssemblySemVer (env.AssemblySemVer): ${{ env.AssemblySemVer }}"
+          echo "SemVer (env.SemVer): ${{ steps.version_step.outputs.GitVersion_MajorMinorPatch }}"
         name: Display GitVersion variables (without prefix)
 
       - name: Ensure PowerShell modules (PSDepend, InvokeBuild, Pester, ModuleBuilder, PSScriptAnalyzer, InjectionHunter) are installed
@@ -75,9 +73,7 @@ jobs:
           $VerbosePreference = 'Continue'
           Set-StrictMode -Version Latest
           Import-Module InvokeBuild -ErrorAction Stop
-          # Run the repository build script using Invoke-Build; the script defines tasks
-          Write-Host (Get-Location)
-          Invoke-Build -Configuration Release
+          Invoke-Build -ReleaseType Release -SemanticVersion ${{ steps.version_step.outputs.GitVersion_MajorMinorPatch }} -Task Build
 
       - name: Upload build artifacts (if any)
         uses: actions/upload-artifact@v4
@@ -86,9 +82,21 @@ jobs:
           path: build/**
           if-no-files-found: warn
 
-      # Create a new tag based on the commit SHA
+      - name: Publish build via Invoke-Build
+        # Change 'namerno' to the desired event name to enable publishing
+        if: github.event_name == 'namerno' 
+        shell: pwsh
+        env:
+          NuGetApiKey: ${{ secrets.NuGetApiKey_PSGallery }}
+        run: |
+          $VerbosePreference = 'Continue'
+          Set-StrictMode -Version Latest
+          Import-Module InvokeBuild -ErrorAction Stop
+          Invoke-Build -NugetApiKey ${{ env.NuGetApiKey }} -Task Publish
+
+      # Create a new tag based on the version determined by GitVersion
       - name: Create Tag
         id: create_tag
         run: |
-          git tag v${{ env.SemVer }}
-          git push origin tag v${{ env.SemVer }}
+          git tag v${{ steps.version_step.outputs.GitVersion_MajorMinorPatch }}
+          git push origin tag v${{ steps.version_step.outputs.GitVersion_MajorMinorPatch }}
