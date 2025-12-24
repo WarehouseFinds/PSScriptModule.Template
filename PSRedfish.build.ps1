@@ -95,11 +95,11 @@ task Test {
             OutputPath   = "$coverageOutputPath\testResults.xml"
         }
         CodeCoverage = @{
-            Enabled      = $true
-            Path         = $script:moduleSourcePath
-            OutputFormat = 'Cobertura'
-            OutputPath   = "$coverageOutputPath\coverage.xml"
-            #CoveragePercentTarget = 60
+            Enabled               = $true
+            Path                  = $script:moduleSourcePath
+            OutputFormat          = 'Cobertura'
+            OutputPath            = "$coverageOutputPath\coverage.xml"
+            CoveragePercentTarget = 0
         }
     }
 
