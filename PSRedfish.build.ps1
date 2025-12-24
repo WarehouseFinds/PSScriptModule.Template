@@ -102,7 +102,7 @@ task Test {
     }
 
     # Invoke all tests
-    Invoke-Pester -Configuration $Config
+    Invoke-Pester -Configuration $Config -Verbose
 }
 
 # Synopsis: Generate a new module version if creating a release build
