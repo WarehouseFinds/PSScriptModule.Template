@@ -44,6 +44,7 @@ Enter-Build {
     $script:moduleManifestPath = Join-Path -Path $moduleSourcePath -ChildPath "$moduleName.psd1"
     $script:nuspecPath = Join-Path -Path $moduleSourcePath -ChildPath "$moduleName.nuspec"
     $script:buildOutputPath = Join-Path -Path $BuildRoot -ChildPath 'build'
+    $script:coverageOutputPath = Join-Path -Path $buildOutputPath -ChildPath 'coverage'
 
     # Setting base module version and using it if building locally
     $script:newModuleVersion = New-Object -TypeName 'System.Version' -ArgumentList (0, 0, 1)
@@ -94,12 +95,10 @@ task Test {
     }
 
     # Additional parameters on Azure Pipelines agents to generate test results
-    if ($env:TF_BUILD) {
-        $Timestamp = Get-date -UFormat "%Y%m%d-%H%M%S"
-        $PSVersion = $PSVersionTable.PSVersion.Major
-        $TestResultFile = "TestResults_PS$PSVersion`_$TimeStamp.xml"
-        $Config.TestResult.OutputPath = "$buildOutputPath\$TestResultFile"
-    }
+    $Timestamp = Get-date -UFormat "%Y%m%d-%H%M%S"
+    $PSVersion = $PSVersionTable.PSVersion.Major
+    $TestResultFile = "TestResults_PS$PSVersion`_$TimeStamp.xml"
+    $Config.TestResult.OutputPath = "$coverageOutputPath\$TestResultFile"
 
     # Invoke all tests
     Invoke-Pester -Configuration $Config
