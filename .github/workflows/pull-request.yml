@@ -48,6 +48,15 @@ jobs:
           Set-StrictMode -Version Latest
           Invoke-Build -Task UnitTest
 
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: (!cancelled())
+        with:
+          files: |
+            test-results/**/*.xml
+            test-results/**/*.trx
+            test-results/**/*.json
+
       - name: Upload Code Coverage Report
         uses: actions/upload-artifact@v4
         with:

@@ -56,20 +56,15 @@ task Analyze {
             Exit = $true
         }
         TestResult = @{
-            Enabled = $true
+            Enabled      = $true
+            OutputFormat = 'NUnitXml'
+            OutputPath   = "$buildOutputPath\PSSA.xml"
         }
     }
 
-    # Additional parameters on Azure Pipelines agents to generate test results
-    if ($env:TF_BUILD) {
-        if (-not (Test-Path -Path $buildOutputPath -ErrorAction SilentlyContinue)) {
-            New-Item -Path $buildOutputPath -ItemType Directory
-        }
-        $Timestamp = Get-date -UFormat "%Y%m%d-%H%M%S"
-        $PSVersion = $PSVersionTable.PSVersion.Major
-        $TestResultFile = "AnalysisResults_PS$PSVersion`_$TimeStamp.xml"
-        $Config.TestResult.OutputPath = "$buildOutputPath\$TestResultFile"
-    }
+    #$Timestamp = Get-date -UFormat "%Y%m%d-%H%M%S"
+    #$PSVersion = $PSVersionTable.PSVersion.Major
+    #$TestResultFile = "AnalysisResults_PS$PSVersion`_$TimeStamp.xml"
 
     # Invoke all tests
     Invoke-Pester -Configuration $Config
