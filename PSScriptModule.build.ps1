@@ -42,19 +42,17 @@ Enter-Build {
     $script:buildOutputPath = Join-Path -Path $BuildRoot -ChildPath 'build'
     $script:publishSourcePath = Join-Path -Path $buildOutputPath -ChildPath $moduleName
     $script:coverageOutputPath = Join-Path -Path $BuildRoot -ChildPath 'coverage'
+    $script:psScriptAnalyzerSourcePath = Join-Path -Path $BuildRoot -ChildPath './tests/SCA/PSScriptAnalyzer.Tests.ps1'
 
     # Setting base module version and using it if building locally
     $script:newModuleVersion = New-Object -TypeName 'System.Version' -ArgumentList (0, 0, 1)
 }
 
 # Synopsis: Analyze the project with PSScriptAnalyzer
-task Analyze {
-    # Get-ChildItem parameters
-    $TestFiles = Get-ChildItem -Path $moduleSourcePath -Recurse -Include "*.PSSATests.*"
-    
+task Analyze { 
     $Config = New-PesterConfiguration @{
         Run        = @{
-            Path = $TestFiles
+            Path = $script:psScriptAnalyzerSourcePath
             Exit = $true
         }
         TestResult = @{
