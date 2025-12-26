@@ -1,22 +1,2 @@
-workflow: TrunkBased/preview1
-assembly-versioning-scheme: MajorMinorPatch
-commit-message-incrementing: Enabled
-major-version-bump-message: '\s?(breaking|major|breaking\schange)'
-minor-version-bump-message: '(adds?|feature?|minor)\b'
-patch-version-bump-message: '\s?(fix|patch)'
-no-bump-message: '\+semver:\s?(none|skip)'
+workflow: GitHubFlow/v1
 tag-prefix: '[vV]?'
-branches:
-  main:
-    label: ''
-    increment: Patch
-    regex: ^master$|^main$
-  feature:
-    label: feature
-    increment: Minor
-    regex: ^features?[/-]
-  hotfix:
-    mode: ManualDeployment
-    label: hotfix
-    increment: Patch
-    regex: ^hotfix(es)?[/-]|^patch?[/-]
