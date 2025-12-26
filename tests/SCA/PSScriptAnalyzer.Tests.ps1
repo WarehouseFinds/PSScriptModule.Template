@@ -1,7 +1,11 @@
+# Generate Pester Unit tests for the module
 [CmdletBinding()]
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '',
     Justification = 'Suppress false positives in Pester code blocks')]
-param()
+param(
+    [System.IO.DirectoryInfo]
+    $SourcePath
+)
 
 BeforeDiscovery {
     # For use within the tests, during the Run phase

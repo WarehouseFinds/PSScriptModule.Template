@@ -8,9 +8,9 @@ param(
 )
 BeforeDiscovery {
     # Resolve the module source path
-    if (-not $SourcePath) {
+    <#     if (-not $SourcePath) {
         $SourcePath = Resolve-Path (Join-Path $PSScriptRoot '..\..\src')
-    }
+    } #>
 }
 
 Describe "PSScriptModule Unit Tests" {
