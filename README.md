@@ -1,5 +1,14 @@
-# PS-RedFish-Client
-A PowerShell-based client for interacting with Redfish APIs, providing a simple and extensible way to query, manage, and automate Redfish-compliant systems via standardized RESTful endpoints.
+# PSScriptModule.Template
+A PowerShell Script Module template for creating and managing PowerShell modules with continuous delivery and code style/security best practices. 
+Template includes:
+- Module structure with source code, tests, and documentation folders
+- Build automation using Invoke-Build
+- Dependency management with PSDepend
+- Code quality checks with PSScriptAnalyzer
+- Unit testing with Pester
+- Documentation generation with PlatyPS
+- CI/CD workflows for automated testing and releases
 
-[![CI](https://github.com/WarehouseFinds/PS-Redfish-Client/actions/workflows/release.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/release.yml)
+## CI Status
+[![CI](https://github.com/WarehouseFinds/PPSScriptModule.Template/actions/workflows/release.yml/badge.svg)](https://github.com/OWNER/REPO/actions/workflows/release.yml)
 

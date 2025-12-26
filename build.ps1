@@ -1,1 +1,1 @@
-@{ Path = "src/PSRedfishClient.psd1" }
+@{ Path = "src/PSScriptModule.Template.psd1" }
