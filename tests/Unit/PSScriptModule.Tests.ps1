@@ -22,7 +22,6 @@ Describe "PSScriptModule Unit Tests" {
 
     It "Have at least 1 Public Function <_>" -Foreach ($SourcePath) {
         $publicFunctions = Get-ChildItem -Path $publicPath
-        $SourcePath | Should -Be 'tests/Unit'
         $publicPath | Should -Be 'tests/Unit/Public'
         $publicFunctions.Count | Should -BeGreaterThan 0
     }

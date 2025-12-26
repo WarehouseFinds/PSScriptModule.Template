@@ -1,4 +1,4 @@
-function Get-PSScriptModuleId {
+function GetModuleId {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
