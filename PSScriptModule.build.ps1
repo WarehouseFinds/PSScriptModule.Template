@@ -8,7 +8,7 @@
     This script contains the tasks for building the 'SampleModule' PowerShell module
 #>
 
-Param (
+param (
     [Parameter(ValueFromPipelineByPropertyName = $true)]
     [ValidateSet('Debug', 'Release', 'Prerelease')]
     [String]
@@ -55,9 +55,10 @@ Enter-Build {
 }
 
 # Synopsis: Analyze the project with PSScriptAnalyzer
-task Analyze { 
+task Analyze {
     # Create build output folder
-    if (-not (Test-Path $psScriptAnalyzerOutputPath)) {
+    if (-not (Test-Path $psScriptAnalyzerOutputPath))
+    {
         Write-Warning "Creating build output folder at '$psScriptAnalyzerOutputPath'"
         [void] (New-Item -Path $psScriptAnalyzerOutputPath -ItemType Directory)
     }
@@ -111,12 +112,14 @@ task UnitTest {
 # Build the project
 task Build Clean, {
     # Warning on local builds
-    if ($ReleaseType -ne 'Release') {
-        Write-Warning "THIS IS A DEBUG BUILD. THE MODULE IS NOT SUITABLE FOR PRODUCTION USE."
+    if ($ReleaseType -ne 'Release')
+    {
+        Write-Warning 'THIS IS A DEBUG BUILD. THE MODULE IS NOT SUITABLE FOR PRODUCTION USE.'
     }
 
     # Create build output folder
-    if (-not (Test-Path $buildOutputPath)) {
+    if (-not (Test-Path $buildOutputPath))
+    {
         Write-Warning "Creating build output folder at '$buildOutputPath'"
         [void] (New-Item -Path $buildOutputPath -ItemType Directory)
     }
@@ -135,9 +138,8 @@ task Build Clean, {
 
 # Publish the module to PSGallery
 task Publish -If ($NugetApiKey) {
-    # 
     $requestParam = @{
-        Path        = $publishSourcePath 
+        Path        = $publishSourcePath
         NuGetApiKey = $NugetApiKey
         ErrorAction = 'Stop'
     }
@@ -146,7 +148,8 @@ task Publish -If ($NugetApiKey) {
 
 # Clean up the target build directory
 task Clean {
-    if (Test-Path $buildOutputPath) {
+    if (Test-Path $buildOutputPath)
+    {
         Write-Warning "Removing build output folder at '$buildOutputPath'"
         $requestParam = @{
             Path    = $buildOutputPath

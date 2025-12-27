@@ -25,7 +25,7 @@
     // PowerShell extension settings
     "powershell.pester.useLegacyCodeLens": false,
     "powershell.codeFormatting.autoCorrectAliases": true,
-    "powershell.codeFormatting.preset": "Allman",
+    "powershell.codeFormatting.preset": "Stroustrup",
     "powershell.codeFormatting.trimWhitespaceAroundPipe": true,
     "powershell.codeFormatting.useConstantStrings": true,
     "powershell.codeFormatting.useCorrectCasing": true

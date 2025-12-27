@@ -1,37 +1,13 @@
-name: CI Release
-run-name: '${{ github.run_id }} - Release Workflow - ${{ github.ref_name }}'
-permissions: read-all
+name: Build Project
+
 on:
-  workflow_dispatch:
-    inputs:
-      logLevel:
-        description: 'Log level'
-        required: true
-        default: 'warning'
-        type: choice
-        options:
-        - info
-        - warning
-        - debug
-      tags:
-        description: 'Test scenario tags'
-        required: false
-        type: boolean
-  push:
-    branches:
-      - main
+  workflow_call:
+permissions: read-all
 
 jobs:
   build:
-    name: Build and Test
-    permissions:
-      contents: write
-      actions: write
-      attestations: write
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [windows-latest] #[ubuntu-latest, windows-latest, macos-latest]
+    name: Build
+    runs-on: [ubuntu-latest]
 
     steps:
       - name: Checkout
@@ -55,21 +31,16 @@ jobs:
           echo "SemVer (env.SemVer): ${{ steps.version_step.outputs.GitVersion_MajorMinorPatch }}"
         name: Display GitVersion variables (without prefix)
 
-      - name: Ensure PowerShell modules (PSDepend, InvokeBuild, Pester, ModuleBuilder, PSScriptAnalyzer, InjectionHunter) are installed
+      - name: Ensure PowerShell modules are installed
         shell: pwsh
         run: |
           Set-StrictMode -Version Latest
-          $modules = 'PSDepend','InvokeBuild','Pester','ModuleBuilder','PSScriptAnalyzer','InjectionHunter'
-          foreach ($m in $modules) {
-            if (-not (Get-Module -ListAvailable -Name $m)) {
-              Install-Module -Name $m -Scope CurrentUser -Force -AllowClobber -ErrorAction Stop
-            }
-          }
+          Install-Module -Name 'PSDepend' -Scope CurrentUser -Force -AllowClobber -ErrorAction Stop
+          Invoke-PSDepend -Force -Path "./requirements.psd1"
 
       - name: Run build via Invoke-Build
         shell: pwsh
         run: |
-          $VerbosePreference = 'Continue'
           Set-StrictMode -Version Latest
           Import-Module InvokeBuild -ErrorAction Stop
           Invoke-Build -ReleaseType Release -SemanticVersion ${{ steps.version_step.outputs.GitVersion_MajorMinorPatch }} -Task Build
@@ -94,8 +65,8 @@ jobs:
           Invoke-Build -NugetApiKey ${{ env.NuGetApiKey }} -Task Publish
 
       # Create a new tag based on the version determined by GitVersion
-      - name: Create Tag
-        id: create_tag
+      - name: Create Release Tag
+        if: github.ref_name == 'main'
         run: |
           git tag v${{ steps.version_step.outputs.GitVersion_MajorMinorPatch }}
           git push origin tag v${{ steps.version_step.outputs.GitVersion_MajorMinorPatch }}

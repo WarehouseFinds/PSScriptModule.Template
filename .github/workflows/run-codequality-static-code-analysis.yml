@@ -1,10 +1,8 @@
 name: CI Static Code Analysis
+run-name: CI Static Code Analysis • ${{ github.event_name }} • ${{ github.ref_name }}
 
 on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+  workflow_call:
 
 jobs:
   static-code-analysis:

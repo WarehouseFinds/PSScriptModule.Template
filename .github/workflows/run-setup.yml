@@ -1,0 +1,63 @@
+name: Setup Prerequisites
+
+on:
+  workflow_call:
+permissions: read-all
+
+jobs:
+  build:
+    name: Setup
+    runs-on: [ubuntu-latest]
+
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4
+
+      - name: Ensure PowerShell modules are installed
+        id: dependency-setup
+        shell: pwsh
+        run: |
+          Set-StrictMode -Version Latest
+
+          # Register required PSRepositories
+          $moduleRequirements = Import-PowerShellDataFile -Path './requirements.psd1'
+          foreach ($repository in $moduleRequirements.Repositories) {
+              $requestParams = @{
+                  Name               = $repository.Name
+                  SourceLocation     = $repository.SourceLocation
+                  PublishLocation    = $repository.PublishLocation
+                  InstallationPolicy = $repository.InstallationPolicy
+                  ErrorAction        = 'Stop'
+              }
+              [void] (Register-PSRepository @requestParams)
+          }
+
+          # Create a list of modules to install
+          $moduleCount = $moduleRequirements.Packages.Count
+          $moduleList = ""
+          $count = 0
+          foreach ($module in $moduleRequirements.Packages) {
+              $count = $count + 1
+              $entry = ""
+              if ($module.Repository) {
+                  $entry = "$($module.Repository)\$($module.Name)"
+              }
+              else {
+                  $entry = $module.Name
+              }
+              if ($module.Version -ne 'latest') {
+                  $entry = $entry + ":$($module.Version)"
+              }
+              if ($count -lt $moduleCount) {
+                  $entry = $entry + ","
+              }
+              $moduleList += $entry
+          }
+          Write-Output "Installing modules: $moduleList"
+          "ModuleList=$moduleList" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+      - name: Install and cache PowerShell modules
+        uses: potatoqualitee/psmodulecache@v6.0
+        with:
+          modules-to-cache: ${{ steps.dependency-setup.outputs.ModuleList }}
+          updatable: true
