@@ -1,4 +1,4 @@
-name: CI
+name: CI Unit Tests
 
 on:
   push:
@@ -40,7 +40,7 @@ jobs:
         if: (!cancelled())
         with:
           check_run: true
-          #check_name: Unit Test Results
+          check_name: Unit Test Report
           check_run_annotations	: all tests, skipped tests
           job_summary: true
           comment_title: Unit Test Results
@@ -76,44 +76,3 @@ jobs:
           header: 'Code Coverage Report'
           recreate: true
           path: code-coverage-results.md
-
-  static-code-analysis:
-    permissions:
-      issues: write
-      pull-requests: write
-      checks: write
-    name: PSScriptAnalyzer
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Ensure PowerShell modules are installed
-        shell: pwsh
-        run: |
-          Set-StrictMode -Version Latest
-          Install-Module -Name 'PSDepend' -Scope CurrentUser -Force -AllowClobber -ErrorAction Stop
-          Invoke-PSDepend -Force -Path "./requirements.psd1"
-
-      - name: Run Static Code Analysis via Invoke-Build
-        shell: pwsh
-        run: |
-          Set-StrictMode -Version Latest
-          Invoke-Build -Task Analyze
-
-      - name: Publish Static Code Analysis Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: (!cancelled())
-        with:
-          check_run: true
-          check_name: PSScriptAnalyzer Report
-          check_run_annotations	: all tests, skipped tests
-          job_summary: true
-          comment_title: PSScriptAnalyzer Report
-          comment_mode: changes in failures
-          files: |
-            test-results/**/PSSA.xml
