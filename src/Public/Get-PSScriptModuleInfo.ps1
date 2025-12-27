@@ -9,7 +9,7 @@ function Get-PSScriptModuleInfo {
     $moduleManifest = Import-PowerShellDataFile -Path $ModulePath 
     # Create a custom object to hold module information
     $moduleInfo = [PSCustomObject]@{
-        ModuleVersion = $moduleManifest.Version
+        ModuleVersion = $moduleManifest.ModuleVersion
         GUID          = $moduleManifest.GUID
         Author        = $moduleManifest.Author
         Description   = $moduleManifest.Description

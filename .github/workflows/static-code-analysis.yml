@@ -32,7 +32,6 @@ jobs:
       - name: Run Static Code Analysis via Invoke-Build
         shell: pwsh
         run: |
-          $VerbosePreference = 'Continue'
           Set-StrictMode -Version Latest
           Invoke-Build -Task Analyze
 
@@ -40,8 +39,10 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: (!cancelled())
         with:
-          check_run: false
-          comment_title: "PSScriptAnalyzer Results"
+          check_run: true
+          check_name: "PSScriptAnalyzer Report"
+          job_summary: true
+          comment_title: "PSScriptAnalyzer Report"
           comment_mode: failures
           files: |
             test-results/**/PSSA.xml
