@@ -13,7 +13,7 @@ function Get-PSScriptModuleInfo {
         GUID          = $moduleManifest.GUID
         Author        = $moduleManifest.Author
         Description   = $moduleManifest.Description
-        Company       = $moduleManifest.Company
+        CompanyName   = $moduleManifest.CompanyName
     }
 
     return $moduleInfo
