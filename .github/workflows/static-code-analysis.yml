@@ -41,6 +41,7 @@ jobs:
         if: (!cancelled())
         with:
           check_run: false
-          comment_mode: changes
+          comment_title: "PSScriptAnalyzer Results"
+          comment_mode: changes in failures
           files: |
             test-results/**/PSSA.xml
