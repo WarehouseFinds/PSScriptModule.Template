@@ -41,6 +41,6 @@ jobs:
         if: (!cancelled())
         with:
           check_run: false
-          comment_mode: auto
+          comment_mode: changes
           files: |
             test-results/**/PSSA.xml
