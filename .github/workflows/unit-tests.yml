@@ -44,7 +44,7 @@ jobs:
           check_run_annotations	: all tests, skipped tests
           job_summary: true
           comment_title: Unit Test Results
-          comment_mode: changes in failures
+          comment_mode: off
           fail_on: test failures
           files: |
             test-results/**/testResults.xml
