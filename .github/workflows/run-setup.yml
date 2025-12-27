@@ -49,6 +49,7 @@ jobs:
               }
               else {
                   $entry = $entry + "::"
+              }
               if ($count -lt $moduleCount) {
                   $entry = $entry + ","
               }
