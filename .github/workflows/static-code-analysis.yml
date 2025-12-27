@@ -1,4 +1,4 @@
-name: Pull Request
+name: CI - Static Code Analysis
 
 on:
   pull_request:
@@ -14,7 +14,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest] #[ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest]
 
     steps:
       - name: Checkout
@@ -24,7 +24,6 @@ jobs:
         shell: pwsh
         run: |
           Set-StrictMode -Version Latest
-          Write-Host 'Installing required modules to CurrentUser scope if missing...'
           Install-Module -Name 'PSDepend' -Scope CurrentUser -Force -AllowClobber -ErrorAction Stop
           Invoke-PSDepend -Force -Path "./requirements.psd1"
 
@@ -35,9 +34,18 @@ jobs:
           Set-StrictMode -Version Latest
           Invoke-Build -ReleaseType Debug
 
-      - name: Upload build artifacts (if any)
-        uses: actions/upload-artifact@v4
+      - name: Run Static Code Analysis via Invoke-Build
+        shell: pwsh
+        run: |
+          $VerbosePreference = 'Continue'
+          Set-StrictMode -Version Latest
+          Invoke-Build -Task Analyze
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: (!cancelled())
         with:
-          name: PSRedFishClient-build
-          path: build/**
-          if-no-files-found: warn
+          check_name: Static Code Analysis
+          comment_mode: off
+          files: |
+            test-results/**/*.xml

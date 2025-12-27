@@ -1,0 +1,76 @@
+name: CI - Unit Testing and Code Coverage
+
+on:
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    permissions:
+      issues: write
+      pull-requests: write
+      checks: write
+    name: Build and Test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Ensure PowerShell modules are installed
+        shell: pwsh
+        run: |
+          Set-StrictMode -Version Latest
+          Install-Module -Name 'PSDepend' -Scope CurrentUser -Force -AllowClobber -ErrorAction Stop
+          Invoke-PSDepend -Force -Path "./requirements.psd1"
+
+      - name: Run build via Invoke-Build
+        shell: pwsh
+        run: |
+          Set-StrictMode -Version Latest
+          Invoke-Build -ReleaseType Debug
+
+      - name: Run Unit Tests via Invoke-Build
+        shell: pwsh
+        run: |
+          Set-StrictMode -Version Latest
+          Invoke-Build -Task UnitTest
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: (!cancelled())
+        with:
+          check_name: Unit Tests
+          comment_mode: off
+          files: |
+            test-results/**/*.xml
+
+      - name: Upload Code Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: ${{ github.workspace }}/coverage/coverage.xml
+          retention-days: 5
+
+      - name: Convert Code Coverage Report to markdown
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: coverage/coverage.xml
+          badge: true
+          fail_below_min: true
+          format: markdown
+          hide_branch_rate: false
+          hide_complexity: true
+          indicators: true
+          output: both
+          thresholds: '0 80'
+
+      - name: Add Code Coverage PR Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: github.event_name == 'pull_request'
+        with:
+          recreate: true
+          path: code-coverage-results.md

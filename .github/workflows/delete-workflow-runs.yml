@@ -1,4 +1,4 @@
-name: Delete past workflow runs
+name: Cleanup - Delete past workflow runs
 on:
   schedule:
     # Every day at midnight
