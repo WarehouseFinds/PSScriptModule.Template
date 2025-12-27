@@ -1,4 +1,4 @@
-name: Release
+name: CI Release
 run-name: '${{ github.run_id }} - Release Workflow - ${{ github.ref_name }}'
 permissions: read-all
 on:

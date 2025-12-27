@@ -1,4 +1,4 @@
-name: CI - Static Code Analysis
+name: CI Static Code Analysis
 
 on:
   push:
