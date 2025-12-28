@@ -18,9 +18,6 @@ on:
         description: 'Test scenario tags'
         required: false
         type: boolean
-  push:
-    branches:
-      - main
 
 jobs:
   build:

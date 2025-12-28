@@ -80,5 +80,5 @@ jobs:
       - name: Create Release Tag
         if: github.ref_name == 'main'
         run: |
-          git tag v${{ steps.version_step.outputs.GitVersion_MajorMinorPatch }}
+          git tag -a v${{ steps.version_step.outputs.GitVersion_MajorMinorPatch }} -m "${{ github.event.pull_request.title }}"
           git push origin tag v${{ steps.version_step.outputs.GitVersion_MajorMinorPatch }}
