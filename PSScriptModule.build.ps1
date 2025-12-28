@@ -7,19 +7,21 @@
 .DESCRIPTION
     This script contains the tasks for building the 'SampleModule' PowerShell module
 #>
-
+[CmdletBinding()]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '',
+    Justification = 'Suppress false positives in Invoke-Build tasks')]
 param (
-    [Parameter(ValueFromPipelineByPropertyName = $true)]
+    [Parameter()]
     [ValidateSet('Debug', 'Release', 'Prerelease')]
     [String]
     $ReleaseType = 'Debug',
 
-    [Parameter(ValueFromPipelineByPropertyName = $true)]
+    [Parameter()]
     [ValidateNotNullOrEmpty()]
     [String]
     $SemanticVersion,
 
-    [Parameter(ValueFromPipelineByPropertyName = $true)]
+    [Parameter()]
     [ValidateNotNullOrEmpty()]
     [String]
     $NugetApiKey
@@ -32,49 +34,33 @@ Set-StrictMode -Version Latest
 task . Clean, Build
 
 
-# Install build dependencies
+# Setup build environment
 Enter-Build {
-    # Setting build script variables
     $script:moduleName = 'PSScriptModule'
     $script:moduleSourcePath = Join-Path -Path $BuildRoot -ChildPath 'src'
-    $script:moduleManifestPath = Join-Path -Path $moduleSourcePath -ChildPath "$moduleName.psd1"
     $script:testSourcePath = Join-Path -Path $BuildRoot -ChildPath 'tests'
     $script:testOutputPath = Join-Path -Path $BuildRoot -ChildPath 'test-results'
-    $script:nuspecPath = Join-Path -Path $moduleSourcePath -ChildPath "$moduleName.nuspec"
     $script:buildOutputPath = Join-Path -Path $BuildRoot -ChildPath 'build'
     $script:publishSourcePath = Join-Path -Path $buildOutputPath -ChildPath $moduleName
-    $script:psScriptAnalyzerSourcePath = Join-Path -Path $BuildRoot -ChildPath './tests/SCA/PSScriptAnalyzer.Tests.ps1'
-    $script:psScriptAnalyzerOutputPath = Join-Path -Path $testOutputPath -ChildPath 'SCA'
-    $script:unitTestSourcePath = Join-Path -Path $BuildRoot -ChildPath './tests/Unit'
-    $script:unitTestOutputPath = Join-Path -Path $testOutputPath -ChildPath 'Unit'
-
-
-    # Setting base module version and using it if building locally
-    $script:newModuleVersion = New-Object -TypeName 'System.Version' -ArgumentList (0, 0, 1)
 }
 
 # Synopsis: Analyze the project with PSScriptAnalyzer
 task Analyze {
-    # Create build output folder
-    if (-not (Test-Path $psScriptAnalyzerOutputPath)) {
-        Write-Warning "Creating build output folder at '$psScriptAnalyzerOutputPath'"
-        [void] (New-Item -Path $psScriptAnalyzerOutputPath -ItemType Directory)
+    # Create test output folder
+    if (-not (Test-Path $testOutputPath)) {
+        [void] (New-Item -Path $testOutputPath -ItemType Directory)
     }
     $Config = New-PesterConfiguration @{
         Run        = @{
-            Path = $script:psScriptAnalyzerSourcePath
+            Path = (Join-Path -Path $testSourcePath -ChildPath 'PSScriptAnalyzer')
             Exit = $true
         }
         TestResult = @{
             Enabled      = $true
             OutputFormat = 'NUnitXml'
-            OutputPath   = "$psScriptAnalyzerOutputPath\PSSA.xml"
+            OutputPath   = "$testOutputPath\static-code-analysis.xml"
         }
     }
-
-    #$Timestamp = Get-date -UFormat "%Y%m%d-%H%M%S"
-    #$PSVersion = $PSVersionTable.PSVersion.Major
-    #$TestResultFile = "AnalysisResults_PS$PSVersion`_$TimeStamp.xml"
 
     # Invoke all tests
     Invoke-Pester -Configuration $Config
@@ -82,7 +68,11 @@ task Analyze {
 
 # Synopsis: Run Pester tests Unit tests and generate code coverage report
 task UnitTest {
-    #$files = Get-ChildItem -Path $moduleSourcePath -Recurse -Force -Include '*.ps1' -Exclude '*.Tests.ps1', '*build.ps1'
+    # Create test output folder
+    if (-not (Test-Path $testOutputPath)) {
+        [void] (New-Item -Path $testOutputPath -ItemType Directory)
+    }
+
     $unitContainer = New-PesterContainer -Path $Script:moduleSourcePath -Data @{ SourcePath = $script:moduleSourcePath }
     $unitConfig = New-PesterConfiguration @{
         Run          = @{
@@ -93,13 +83,13 @@ task UnitTest {
         TestResult   = @{
             Enabled      = $true
             OutputFormat = 'NUnitXml'
-            OutputPath   = "$unitTestOutputPath\testResults.xml"
+            OutputPath   = "$testOutputPath\unit-tests.xml"
         }
         CodeCoverage = @{
             Enabled        = $true
             Path           = $Script:moduleSourcePath
             OutputFormat   = 'Cobertura'
-            OutputPath     = "$coverageOutputPath\coverage.xml"
+            OutputPath     = "$testOutputPath\code-coverage.xml"
             OutputEncoding = 'UTF8'
         }
     }
@@ -107,7 +97,7 @@ task UnitTest {
     Invoke-Pester -Configuration $unitConfig -Verbose
 }
 
-# Build the project
+# Synopsis: Build the project
 task Build Clean, {
     # Warning on local builds
     if ($ReleaseType -ne 'Release') {
@@ -132,7 +122,7 @@ task Build Clean, {
     [void] (Build-Module @requestParam)
 }
 
-# Publish the module to PSGallery
+# Synopsis: Publish the module to PSGallery
 task Publish -If ($NugetApiKey) {
     $requestParam = @{
         Path        = $publishSourcePath
@@ -142,7 +132,7 @@ task Publish -If ($NugetApiKey) {
     [void] (Publish-Module @requestParam)
 }
 
-# Clean up the target build directory
+# Synopsis: Clean up the target build directory
 task Clean {
     if (Test-Path $buildOutputPath) {
         Write-Warning "Removing build output folder at '$buildOutputPath'"

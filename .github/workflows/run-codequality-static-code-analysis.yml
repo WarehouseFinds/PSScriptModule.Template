@@ -45,4 +45,4 @@ jobs:
           comment_title: PSScriptAnalyzer Report
           comment_mode: off
           files: |
-            test-results/**/PSSA.xml
+            test-results/static-code-analysis.xml

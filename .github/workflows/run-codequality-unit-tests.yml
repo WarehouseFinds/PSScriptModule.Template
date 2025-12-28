@@ -46,19 +46,19 @@ jobs:
           comment_mode: off
           fail_on: test failures
           files: |
-            test-results/**/testResults.xml
+            test-results/unit-tests.xml
 
       - name: Upload Code Coverage Report
         uses: actions/upload-artifact@v4
         with:
           name: coverage
-          path: ${{ github.workspace }}/coverage/coverage.xml
+          path: test-results/code-coverage.xml
           retention-days: 5
 
       - name: Convert Code Coverage Report to markdown
         uses: irongut/CodeCoverageSummary@v1.3.0
         with:
-          filename: coverage/coverage.xml
+          filename: test-results/code-coverage.xml
           badge: true
           fail_below_min: true
           format: markdown
