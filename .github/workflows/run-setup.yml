@@ -1,0 +1,77 @@
+name: Setup project dependencies
+permissions: read-all
+on:
+  workflow_call:
+    outputs:
+      module-list: 
+        description: 'Comma-separated list of PowerShell modules to install and cache'
+        value: ${{ jobs.setup-dependencies.outputs.module-list }}
+
+jobs:
+  setup-dependencies:
+    name: Dependencies
+    runs-on: [ubuntu-latest]
+    outputs:
+      module-list: ${{ steps.resolve-dependencies.outputs.module-list }}
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4
+
+      - name: Register PSRepositories
+        shell: pwsh
+        run: |
+          # Register required PSRepositories
+          $moduleRequirements = Import-PowerShellDataFile -Path './requirements.psd1'
+          foreach ($repository in $moduleRequirements.Repositories) {
+              $requestParams = @{
+                  Name               = $repository.Name
+                  SourceLocation     = $repository.SourceLocation
+                  PublishLocation    = $repository.PublishLocation
+                  InstallationPolicy = $repository.InstallationPolicy
+                  ErrorAction        = 'Stop'
+              }
+              [void] (Register-PSRepository @requestParams)
+          }
+
+      - name: Resolve module dependencies
+        id: resolve-dependencies
+        shell: pwsh
+        run: |
+          # Resolve module dependencies from requirements.psd1
+          $moduleRequirements = Import-PowerShellDataFile -Path './requirements.psd1'
+          $packages = @($moduleRequirements.Packages)
+          $moduleList = (
+              $packages |
+                  ForEach-Object {
+                      $name = if ($_.Repository) {
+                          "$($_.Repository)\$($_.Name)"
+                      }
+                      else {
+                          $_.Name
+                      }
+
+                      if ($_.Version -ne 'latest') {
+                          "$($name):$($_.Version)"
+                      }
+                      else {
+                          "$($name)::"
+                      }
+                  }
+          ) -join ','
+          "module-list=$moduleList" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+      - name: Install and cache PowerShell modules
+        uses: potatoqualitee/psmodulecache@v6.2.1
+        with:
+          modules-to-cache: ${{ steps.resolve-dependencies.outputs.module-list }}
+          updatable: true
+
+      - name: Verify installed modules
+        shell: pwsh
+        run: |
+          # Verify that required modules are installed
+          $moduleRequirements = Import-PowerShellDataFile -Path './requirements.psd1'
+          $packages = @($moduleRequirements.Packages)
+          foreach ($package in $packages) {
+              Get-Module -ListAvailable -Name $package.Name -ErrorAction Stop
+          }

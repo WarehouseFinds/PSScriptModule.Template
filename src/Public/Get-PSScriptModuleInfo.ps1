@@ -6,16 +6,21 @@ function Get-PSScriptModuleInfo
         [string]$ModulePath
     )
 
-    # Import the module manifest
-    $moduleManifest = Import-PowerShellDataFile -Path $ModulePath
-    # Create a custom object to hold module information
-    $moduleInfo = [PSCustomObject]@{
-        ModuleVersion = $moduleManifest.ModuleVersion
-        GUID          = $moduleManifest.GUID
-        Author        = $moduleManifest.Author
-        Description   = $moduleManifest.Description
-        CompanyName   = $moduleManifest.CompanyName
-    }
+    try
+    {
+        $moduleManifest = Import-PowerShellDataFile -Path $ModulePath
+        $moduleInfo = [PSCustomObject]@{
+            ModuleVersion = $moduleManifest.ModuleVersion
+            GUID          = $moduleManifest.GUID
+            Author        = $moduleManifest.Author
+            Description   = $moduleManifest.Description
+            CompanyName   = $moduleManifest.CompanyName
+        }
 
-    return $moduleInfo
+        return $moduleInfo
+    }
+    catch
+    {
+        throw "$($MyInvocation.MyCommand.Name): Failed to get module info from $ModulePath. $_"
+    }
 }

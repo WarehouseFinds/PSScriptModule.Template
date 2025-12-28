@@ -1,0 +1,83 @@
+name: Build Project
+
+on:
+  workflow_call:
+    inputs:
+      module-list:
+        description: 'Comma-separated list of PowerShell modules to install and cache'
+        required: true
+        type: string
+    outputs:
+      semantic-version:
+        description: 'Semantic version determined by GitVersion'
+        value: ${{ jobs.build.outputs.semantic-version }}
+
+jobs:
+  build:
+    name: Build PowerShell Module
+    runs-on: [ubuntu-latest]
+    permissions:
+      contents: write
+    outputs:
+      semantic-version: ${{ steps.version_step.outputs.GitVersion_MajorMinorPatch }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v4.2.0
+        with:
+          versionSpec: '6.5.x'
+          preferLatestVersion: true
+
+      - name: Determine Version
+        id: version_step # step id used as a reference for output values
+        uses: gittools/actions/gitversion/execute@v4.2.0
+        with:
+          configFilePath: gitversion.yml
+
+      - run: |
+          echo "SemVer (env.SemVer): ${{ steps.version_step.outputs.GitVersion_MajorMinorPatch }}"
+        name: Display GitVersion variables (without prefix)
+
+      - name: Install and cache PowerShell modules
+        uses: potatoqualitee/psmodulecache@v6.2.1
+        with:
+          modules-to-cache: ${{ inputs['module-list'] }}  
+          updatable: true
+
+      - name: Run build via Invoke-Build
+        shell: pwsh
+        run: |
+          Set-StrictMode -Version Latest
+          Import-Module InvokeBuild -ErrorAction Stop
+          Invoke-Build -ReleaseType Release -SemanticVersion ${{ steps.version_step.outputs.GitVersion_MajorMinorPatch }} -Task Build
+
+      - name: Upload build artifacts (if any)
+        uses: actions/upload-artifact@v4
+        with:
+          name: PSRedFishClient-build
+          path: build/**
+          if-no-files-found: warn
+
+      - name: Publish build via Invoke-Build
+        # Change 'namerno' to the desired event name to enable publishing
+        if: github.event_name == 'namerno' 
+        shell: pwsh
+        env:
+          NuGetApiKey: ${{ secrets.NuGetApiKey_PSGallery }}
+        run: |
+          $VerbosePreference = 'Continue'
+          Set-StrictMode -Version Latest
+          Import-Module InvokeBuild -ErrorAction Stop
+          Invoke-Build -NugetApiKey ${{ env.NuGetApiKey }} -Task Publish
+
+      # Create a new tag based on the version determined by GitVersion
+      - name: Create Release Tag
+        if: github.ref_name == 'main'
+        run: |
+          git tag v${{ steps.version_step.outputs.GitVersion_MajorMinorPatch }}
+          git push origin tag v${{ steps.version_step.outputs.GitVersion_MajorMinorPatch }}

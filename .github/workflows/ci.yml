@@ -1,0 +1,72 @@
+name: CI
+run-name: CI • ${{ github.event_name }} • ${{ github.ref_name }}
+permissions: read-all
+
+on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+        - info
+        - warning
+        - debug
+      tags:
+        description: 'Test scenario tags'
+        required: false
+        type: boolean
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  setup:
+    name: Setup
+    uses: ./.github/workflows/run-setup.yml
+
+  unit-tests:
+    name: Unit Tests
+    needs: [setup]
+    uses: ./.github/workflows/run-codequality-unit-tests.yml
+    permissions:
+      issues: write
+      pull-requests: write
+      checks: write
+    with:
+      module-list: ${{ needs.setup.outputs.module-list }}
+
+  static-code-analysis:
+    name: Static Code Analysis
+    needs: [setup]
+    uses: ./.github/workflows/run-codequality-static-code-analysis.yml
+    permissions:
+      issues: write
+      pull-requests: write
+      checks: write
+    with:
+      module-list: ${{ needs.setup.outputs.module-list }}
+
+  semantic-code-analysis:
+    name: Semantic Code Analysis
+    needs: [setup]
+    uses: ./.github/workflows/run-codequality-semantic-code-analysis.yml
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+      packages: read
+  
+  build:
+    name: Build
+    needs: [setup]
+    uses: ./.github/workflows/run-build.yml
+    permissions:
+      contents: write
+    with:
+      module-list: ${{ needs.setup.outputs.module-list }}

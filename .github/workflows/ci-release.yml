@@ -1,6 +1,7 @@
 name: CI Release
-run-name: '${{ github.run_id }} - Release Workflow - ${{ github.ref_name }}'
+run-name: CI Release • ${{ github.event_name }} • ${{ github.ref_name }}
 permissions: read-all
+
 on:
   workflow_dispatch:
     inputs:
@@ -23,7 +24,7 @@ on:
 
 jobs:
   build:
-    name: Build and Test
+    name: Build Project
     permissions:
       contents: write
       actions: write
