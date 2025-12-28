@@ -80,5 +80,8 @@ jobs:
       - name: Create Release Tag
         if: github.ref_name == 'main'
         run: |
-          git tag -a v${{ steps.version_step.outputs.GitVersion_MajorMinorPatch }} -m "${{ github.event.pull_request.title }}"
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com"
+          tag_title=$(${{ github.event.workflow_run.head_commit.message }} | sed -n '2p')
+          git tag -a v${{ steps.version_step.outputs.GitVersion_MajorMinorPatch }} -m "$tag_title"
           git push origin tag v${{ steps.version_step.outputs.GitVersion_MajorMinorPatch }}
