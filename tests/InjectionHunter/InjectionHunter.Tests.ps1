@@ -7,7 +7,7 @@ param()
 Describe 'Injection Hunter security checks' {
 
     BeforeAll {
-        $injectionHunterPath = ((Get-Module InjectionHunter -ListAvailable).Path | Split-Path)
+        $injectionHunterPath = (Get-Module InjectionHunter -ListAvailable).Path
     }
     BeforeDiscovery {
         $modulePath = Resolve-Path (Join-Path $PSScriptRoot '..\..\src')
