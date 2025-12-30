@@ -106,6 +106,9 @@ task Invoke-UnitTests {
     Invoke-Pester -Configuration $config -Verbose
 }
 
+# Synopsis: Run all tests
+task Test Invoke-UnitTests, Invoke-PSScriptAnalyzer, Invoke-InjectionHunter
+
 # Synopsis: Generate module help documentation
 task Export-CommandHelp {
 
