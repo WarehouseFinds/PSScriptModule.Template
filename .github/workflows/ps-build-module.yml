@@ -83,7 +83,7 @@ jobs:
       - name: Upload build artifacts (if any)
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.repository}}-build-${{ github.ref_name }}-${{ steps.version_step.outputs.GitVersion_MajorMinorPatch }}
+          name: ${{ github.repository }}-build-${{ github.ref_name }}-${{ steps.version_step.outputs.GitVersion_MajorMinorPatch }}
           path: build/**
           if-no-files-found: warn
 
