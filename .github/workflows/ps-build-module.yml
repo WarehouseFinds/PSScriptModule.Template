@@ -89,7 +89,6 @@ jobs:
         run: |
           git status
           git add docs/help
-          
           if git diff --cached --quiet; then
             echo "No help changes to commit"
             exit 0
