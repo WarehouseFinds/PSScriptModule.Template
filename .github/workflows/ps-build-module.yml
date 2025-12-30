@@ -83,7 +83,7 @@ jobs:
       - name: Upload build artifacts (if any)
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.repository }}-build-${{ github.ref_name }}-${{ steps.version_step.outputs.GitVersion_MajorMinorPatch }}
+          name: build-${{ github.ref_name }}-${{ steps.version_step.outputs.GitVersion_MajorMinorPatch }}
           path: build/**
           if-no-files-found: warn
 
@@ -119,7 +119,6 @@ jobs:
           git push origin HEAD:main
 
       - name: Publish build package to PSGallery
-        # Change 'namerno' to the desired event name to enable publishing
         if: inputs.publish == true && inputs['release-type'] == 'Release'
         shell: pwsh
         env:
