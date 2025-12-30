@@ -1,4 +1,5 @@
-name: Cleanup past workflow runs
+name: Cron • Cleanup past workflow runs
+run-name: ${{ github.event_name }} •  Cleanup past workflow runs • ${{ github.repository }}
 on:
   schedule:
     # Every day at midnight
@@ -18,7 +19,7 @@ on:
         
 
 jobs:
-  delete-runs:
+  cleanup-runs:
     runs-on: ubuntu-latest
     permissions:
       actions: write

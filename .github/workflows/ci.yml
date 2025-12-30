@@ -1,23 +1,25 @@
 name: CI
-run-name: CI • ${{ github.event_name }} • ${{ github.ref_name }}
+run-name: CI • ${{ github.repository }} • ${{ github.event_name }} • ${{ github.ref_name }}
 permissions: read-all
 
 on:
   workflow_dispatch:
     inputs:
-      logLevel:
-        description: 'Log level'
+      release-type:
+        description: 'Release Type [Release/Prerelease/Debug]'
         required: true
-        default: 'warning'
+        default: Release
         type: choice
         options:
-        - info
-        - warning
-        - debug
-      tags:
-        description: 'Test scenario tags'
+          - Release
+          - Prerelease
+          - Debug
+
+      publish:
+        description: 'Publish release to PSGallery (Release only)'
         required: false
         type: boolean
+        default: false
   push:
     branches:
       - main
@@ -85,4 +87,6 @@ jobs:
     permissions:
       contents: write
     with:
+      release-type: ${{ inputs.release-type }}
+      publish: ${{ inputs.publish }}
       module-list: ${{ needs.setup.outputs.module-list }}

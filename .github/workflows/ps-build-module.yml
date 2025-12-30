@@ -1,8 +1,16 @@
-name: Build PowerShell Module
-
+name: CI Build PowerShell Module
 on:
   workflow_call:
     inputs:
+      release-type:
+        description: 'Release Type [Release/Prerelease/Debug]'
+        required: false
+        type: string
+      publish:
+        description: 'Publish release to PSGallery (Release only)'
+        required: false
+        type: boolean
+        default: false
       module-list:
         description: 'Comma-separated list of PowerShell modules to install and cache'
         required: true
@@ -38,10 +46,6 @@ jobs:
         uses: gittools/actions/gitversion/execute@v4.2.0
         with:
           configFilePath: gitversion.yml
-
-      - run: |
-          echo "SemVer (env.SemVer): ${{ steps.version_step.outputs.GitVersion_MajorMinorPatch }}"
-        name: Display GitVersion variables (without prefix)
 
       - name: Install and cache PowerShell modules
         uses: potatoqualitee/psmodulecache@v6.2.1
@@ -79,13 +83,13 @@ jobs:
       - name: Upload build artifacts (if any)
         uses: actions/upload-artifact@v4
         with:
-          name: PSRedFishClient-build
+          name: ${{ github.repository }}-build-${{ github.ref_name }}-${{ steps.version_step.outputs.GitVersion_MajorMinorPatch }}
           path: build/**
           if-no-files-found: warn
 
       # Create a new tag based on the version determined by GitVersion
       # This is done BEFORE committing help to ensure the tag points to the verified PR merge commit
-      - name: Create Release Tag
+      - name: Create release tag
         if: github.ref_name == 'main'
         run: |
           git tag v${{ steps.version_step.outputs.GitVersion_MajorMinorPatch }}
@@ -114,9 +118,9 @@ jobs:
         run: |
           git push origin HEAD:main
 
-      - name: Publish build via Invoke-Build
+      - name: Publish build package to PSGallery
         # Change 'namerno' to the desired event name to enable publishing
-        if: github.event_name == 'namerno' 
+        if: inputs.publish == true && inputs['release-type'] == 'Release'
         shell: pwsh
         env:
           NuGetApiKey: ${{ secrets.NuGetApiKey_PSGallery }}

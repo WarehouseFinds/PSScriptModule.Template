@@ -1,4 +1,4 @@
-name: Setup powershell dependencies
+name: CI Setup Powershell Dependencies
 permissions: read-all
 on:
   workflow_call:

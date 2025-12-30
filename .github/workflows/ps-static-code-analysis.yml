@@ -1,6 +1,4 @@
 name: CI Static Code Analysis
-run-name: CI Static Code Analysis • ${{ github.event_name }} • ${{ github.ref_name }}
-
 on:
   workflow_call:
     inputs:

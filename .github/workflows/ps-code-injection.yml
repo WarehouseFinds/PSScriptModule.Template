@@ -1,6 +1,4 @@
-name: CI Code Injection
-run-name: CI Code Injection • ${{ github.event_name }} • ${{ github.ref_name }}
-
+name: CI Code Injection Analysis
 on:
   workflow_call:
     inputs:
