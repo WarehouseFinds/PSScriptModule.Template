@@ -1,2 +1,0 @@
-# This file ensures the docs/help directory is tracked by git
-# PlatyPS will generate PowerShell command help files here during the build process
