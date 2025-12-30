@@ -60,7 +60,7 @@ jobs:
           Set-StrictMode -Version Latest
           [void] (Import-Module InvokeBuild)
           $requestParam = @{
-              ReleaseType     = 'Release'
+              ReleaseType     = '${{ inputs.release-type || 'Release' }}'
               SemanticVersion = '${{ steps.version_step.outputs.GitVersion_MajorMinorPatch }}'
               Task            = 'Build'
           }

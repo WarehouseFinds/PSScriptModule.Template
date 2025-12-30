@@ -87,6 +87,6 @@ jobs:
     permissions:
       contents: write
     with:
-      release-type: ${{ inputs.release-type }}
-      publish: ${{ inputs.publish }}
+      release-type: ${{ inputs.release-type || 'Release' }}
+      publish: ${{ inputs.publish || false }}
       module-list: ${{ needs.setup.outputs.module-list }}
