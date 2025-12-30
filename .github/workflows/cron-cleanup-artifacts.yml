@@ -1,5 +1,5 @@
 name: Cron • Cleanup past artifacts
-run-name: ${{ github.event_name }} •  Cleanup past artifacts • ${{ github.repository }}
+run-name: ${{ github.event_name }} • Cleanup past artifacts • ${{ github.repository }}
 
 on:
   schedule:
