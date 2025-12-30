@@ -73,7 +73,6 @@ jobs:
     name: Semantic Code Analysis
     needs: [setup]
     uses: ./.github/workflows/ps-semantic-code-analysis.yml
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     permissions:
       security-events: write
       actions: read
