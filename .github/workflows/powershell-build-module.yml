@@ -15,10 +15,6 @@ on:
         description: 'Comma-separated list of PowerShell modules to install and cache'
         required: true
         type: string
-    outputs:
-      semantic-version:
-        description: 'Semantic version determined by GitVersion'
-        value: ${{ jobs.build.outputs.semantic-version }}
     secrets:
       NUGETAPIKEY_PSGALLERY:
         description: 'NuGet API Key for publishing to PSGallery'
@@ -35,7 +31,7 @@ jobs:
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.01
         with:
           repository: ${{ github.repository }}
-          ref: ${{ inputs['tag-version'] || '' }}
+          ref: ${{ inputs['version-tag'] || '' }}
           fetch-depth: 0
 
       - name: Install GitVersion 6.5.1
@@ -44,7 +40,6 @@ jobs:
           versionSpec: '6.5.1'
 
       - name: Determine semantic version for build
-        id: version_step
         uses: gittools/actions/gitversion/execute@d0139503a9321f76b4a417dfdc8aebcec24decdd #v4.2.0
         with:
           configFilePath: GitVersion.yml
@@ -58,12 +53,11 @@ jobs:
           updatable: false
 
       - name: Determine release type for build
-        id: releasetype_step
         shell: pwsh
         run: |
           switch ("${{ github.event_name }}") {
-            'pull_request'     { $value = 'Debug' }
             'workflow_dispatch' { $value = 'Release' }
+            'pull_request'      { $value = 'Debug' }
             'push' {
               if ('${{ github.ref_name }}' -eq 'main') {
                 $value = 'Prerelease'
@@ -73,7 +67,7 @@ jobs:
             }
             default { $value = 'Debug' }
           }
-          "releaseType=$value" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          echo "releaseType=$value" >> $env:GITHUB_OUTPUT
 
       - name: Run build via Invoke-Build
         shell: pwsh
@@ -81,8 +75,8 @@ jobs:
           Set-StrictMode -Version Latest
           [void] (Import-Module InvokeBuild)
           $requestParam = @{
-              ReleaseType     = '${{ steps.releasetype_step.outputs.ReleaseType }}'
-              SemanticVersion = '${{ steps.version_step.outputs.semVer }}'
+              ReleaseType     = '${{ env.releaseType }}'
+              SemanticVersion = '${{ env.semVer }}'
               Task            = 'Build'
           }
           Invoke-Build @requestParam
@@ -96,7 +90,7 @@ jobs:
           Set-StrictMode -off
           [void] (Import-Module InvokeBuild)
           $requestParam = @{
-              SemanticVersion = '${{ steps.version_step.outputs.semVer }}'
+              SemanticVersion = '${{ env.majorMinorPatch }}'
               Task            = 'Export-CommandHelp'
           }
           Invoke-Build @requestParam
@@ -105,7 +99,7 @@ jobs:
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f #v6
         if: (!cancelled())
         with:
-          name: build-${{ steps.version_step.outputs.semVer }}
+          name: build-${{ env.semVer }}
           path: build/**
           if-no-files-found: warn
 
@@ -115,8 +109,8 @@ jobs:
       - name: Create release tag
         if: github.ref_name == 'main' && github.event_name == 'push'
         run: |
-          git tag v${{ steps.version_step.outputs.semVer }}
-          git push origin tag v${{ steps.version_step.outputs.semVer }}
+          git tag v${{ env.majorMinorPatch }}
+          git push origin tag v${{ env.majorMinorPatch }}
 
       - name: Commit generated help
         if: github.ref_name == 'main' && github.event_name == 'push'
@@ -130,7 +124,7 @@ jobs:
 
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git commit -m "Update PowerShell help for release v${{ steps.version_step.outputs.semVer }}"
+          git commit -m "Update PowerShell help for release v${{ env.majorMinorPatch }}"
           git push origin HEAD:main
 
       - name: Publish build package to PSGallery

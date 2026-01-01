@@ -120,8 +120,7 @@ task Export-CommandHelp {
     $requestParam = @{
         CommandInfo    = (Get-Command -Module $moduleName)
         OutputFolder   = "$buildPath/help"
-        # Full semantic version is not supported in HelpVersion
-        HelpVersion    = ($SemanticVersion.Split('-', 2)[0])
+        HelpVersion    = $SemanticVersion
         WithModulePage = $true
         Force          = $true
     }
@@ -178,13 +177,16 @@ task Build Clean, {
     # Add pre-release tag if needed
     switch ($ReleaseType) {
         'Release' {
-            $semVer = $SemanticVersion
+            # e.g. 1.2.4-5  ->  1.2.4
+            $semVer = $SemanticVersion.Split('-', 2)[0]
         }
         'Prerelease' {
-            $semVer = "$SemanticVersion-PR$($env:GITHUB_RUN_ID)"
+            # e.g. 1.2.4-5  ->  1.2.4-Prerelease-5
+            $semVer = $SemanticVersion.Split('-', 2)[0] + '-Prerelease' + $SemanticVersion.Split('-', 2)[1]
         }
         'Debug' {
-            $semVer = "$SemanticVersion-Debug$($env:GITHUB_RUN_ID)"
+            # 1.2.4-PullRequest1234 -> 1.2.4-PullRequest1234
+            $semVer = $SemanticVersion
         }
     }
 
@@ -193,7 +195,7 @@ task Build Clean, {
     $requestParam = @{
         Path                       = (Join-Path -Path $buildPath -ChildPath "src/$moduleName.psd1")
         OutputDirectory            = (Join-Path -Path $buildPath -ChildPath "out/$moduleName")
-        SemanticVersion            = $SemVer
+        SemVer                     = $semVer
         UnversionedOutputDirectory = $true
         ErrorAction                = 'Stop'
     }
