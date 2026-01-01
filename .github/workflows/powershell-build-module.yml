@@ -67,7 +67,7 @@ jobs:
             }
             default { $value = 'Debug' }
           }
-          echo "releaseType=$value" >> $env:GITHUB_OUTPUT
+          echo "releaseType=$value" >> $env:GITHUB_ENV
 
       - name: Run build via Invoke-Build
         shell: pwsh
