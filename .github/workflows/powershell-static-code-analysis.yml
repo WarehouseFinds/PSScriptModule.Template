@@ -1,4 +1,4 @@
-name: CI Code Injection Analysis
+name: CI Static Code Analysis
 on:
   workflow_call:
     inputs:
@@ -8,39 +8,41 @@ on:
         type: string
 
 jobs:
-  code-injection:
-    name: InjectionHunter
+  static-code-analysis:
+    name: PSScriptAnalyzer
     permissions:
       issues: write
       pull-requests: write
       checks: write
     runs-on: [ubuntu-latest]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.01
+        with:
+          repository: ${{ github.repository }}
 
       - name: Install and cache PowerShell modules
-        uses: potatoqualitee/psmodulecache@v6.2.1
+        uses: potatoqualitee/psmodulecache@ee5e9494714abf56f6efbfa51527b2aec5c761b8 #v6.2.1
         with:
           modules-to-cache: ${{ inputs['module-list'] }}  
           shell: pwsh
           updatable: false
 
-      - name: Run Code Injection Analysis via Invoke-Build
+      - name: Run Static Code Analysis via Invoke-Build
         shell: pwsh
         run: |
           Set-StrictMode -Version Latest
-          Invoke-Build -Task Invoke-InjectionHunter
+          Invoke-Build -Task Invoke-PSScriptAnalyzer
 
-      - name: Publish Code Injection Analysis Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
+      - name: Publish Static Code Analysis Results
+        uses: EnricoMi/publish-unit-test-result-action@27d65e188ec43221b20d26de30f4892fad91df2f #v2.22.0
         if: (!cancelled())
         with:
           check_run: false
-          check_name: ">> Report: InjectionHunter"
+          check_name: ">> Report: PSScriptAnalyzer"
           check_run_annotations	: all tests, skipped tests
           job_summary: true
-          comment_title: InjectionHunter Report
+          comment_title: PSScriptAnalyzer Report
           comment_mode: off
           files: |
-            test-results/code-injection.xml
+            test-results/static-code-analysis.xml

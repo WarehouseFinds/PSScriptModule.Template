@@ -39,12 +39,12 @@ on:
 jobs:
   setup:
     name: Setup
-    uses: ./.github/workflows/ps-cache-dependencies.yml
+    uses: ./.github/workflows/powershell-cache-dependencies.yml
 
   unit-tests:
     name: Unit Tests
     needs: [setup]
-    uses: ./.github/workflows/ps-unit-tests.yml
+    uses: ./.github/workflows/powershell-unit-tests.yml
     permissions:
       issues: write
       pull-requests: write
@@ -55,7 +55,7 @@ jobs:
   static-code-analysis:
     name: Static Code Analysis
     needs: [setup]
-    uses: ./.github/workflows/ps-static-code-analysis.yml
+    uses: ./.github/workflows/powershell-static-code-analysis.yml
     permissions:
       issues: write
       pull-requests: write
@@ -66,7 +66,7 @@ jobs:
   code-injection:
     name: Code Injection
     needs: [setup]
-    uses: ./.github/workflows/ps-code-injection.yml
+    uses: ./.github/workflows/powershell-code-injection-analysis.yml
     permissions:
       issues: write
       pull-requests: write
@@ -77,7 +77,7 @@ jobs:
   semantic-code-analysis:
     name: Semantic Code Analysis
     needs: [setup]
-    uses: ./.github/workflows/ps-semantic-code-analysis.yml
+    uses: ./.github/workflows/powershell-semantic-code-analysis.yml
     permissions:
       security-events: write
       actions: read
@@ -87,7 +87,7 @@ jobs:
   build:
     name: Build
     needs: [setup, unit-tests, static-code-analysis]
-    uses: ./.github/workflows/ps-build-module.yml
+    uses: ./.github/workflows/powershell-build-module.yml
     permissions:
       contents: write
     with:

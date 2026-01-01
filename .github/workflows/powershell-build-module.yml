@@ -37,45 +37,28 @@ jobs:
       semantic-version: ${{ steps.version_step.outputs.GitVersion_MajorMinorPatch }}
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.01
         with:
+          repository: ${{ github.repository }}
+          ref: ${{ inputs['tag-version'] || '' }}
           fetch-depth: 0
 
-      - name: Checkout specific tag (if provided)
-        if: inputs.tag-version != ''
-        run: |
-          # Handle tag name - remove 'v' prefix if provided by user
-          TAG_VERSION="${{ inputs.tag-version }}"
-          TAG_VERSION="${TAG_VERSION#v}"  # Remove 'v' prefix if present
-          TAG_NAME="v${TAG_VERSION}"
-          echo "Checking out tag: $TAG_NAME"
-
-          # Check if tag exists
-          if ! git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
-            echo "Error: Tag $TAG_NAME does not exist"
-            echo "Available tags (most recent first):"
-            git tag -l 'v*' --sort=-version:refname | head -10
-            exit 1
-          fi
-
-          git checkout "$TAG_NAME"
-          echo "Successfully checked out tag: $TAG_NAME"
-
-      - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v4.2.0
+      - name: Install GitVersion 6.5.1
+        uses: gittools/actions/gitversion/setup@d0139503a9321f76b4a417dfdc8aebcec24decdd #v4.2.0
         with:
-          versionSpec: '6.5.x'
-          preferLatestVersion: true
+          versionSpec: '6.5.1'
 
-      - name: Determine Version
-        id: version_step # step id used as a reference for output values
-        uses: gittools/actions/gitversion/execute@v4.2.0
+      - name: Determine semantic version
+        id: version_step
+        uses: gittools/actions/gitversion/execute@d0139503a9321f76b4a417dfdc8aebcec24decdd #v4.2.0
         with:
-          configFilePath: gitversion.yml
+          configFilePath: GitVersion.yml
+          disableShallowCloneCheck: true
+
 
       - name: Install and cache PowerShell modules
-        uses: potatoqualitee/psmodulecache@v6.2.1
+        uses: potatoqualitee/psmodulecache@ee5e9494714abf56f6efbfa51527b2aec5c761b8 #v6.2.1
         with:
           modules-to-cache: ${{ inputs['module-list'] }}
           shell: pwsh
@@ -108,7 +91,7 @@ jobs:
           [void] (Invoke-Build @requestParam)
 
       - name: Upload build artifacts (if any)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f #v6
         with:
           name: build-${{ steps.version_step.outputs.GitVersion_MajorMinorPatch }}
           path: build/**

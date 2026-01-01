@@ -14,8 +14,10 @@ jobs:
     outputs:
       module-list: ${{ steps.resolve-dependencies.outputs.module-list }}
     steps:
-      - name: Checkout Project
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.01
+        with:
+          repository: ${{ github.repository }}
 
       - name: Register PSRepositories
         shell: pwsh
@@ -61,7 +63,7 @@ jobs:
           "module-list=$moduleList" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
 
       - name: Install and cache PowerShell modules
-        uses: potatoqualitee/psmodulecache@v6.2.1
+        uses: potatoqualitee/psmodulecache@ee5e9494714abf56f6efbfa51527b2aec5c761b8 #v6.2.1
         with:
           modules-to-cache: ${{ steps.resolve-dependencies.outputs.module-list }}
           shell: pwsh
