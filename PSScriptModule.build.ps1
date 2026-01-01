@@ -175,7 +175,7 @@ task Build Clean, {
     [void] (Get-ChildItem @requestParam | Remove-Item -Force)
 
     # Build Powershell module
-    Import-Module ModuleBuilder -ErrorAction Stop
+    [void] (Import-Module ModuleBuilder)
     $requestParam = @{
         Path                       = (Join-Path -Path $buildPath -ChildPath "src/$moduleName.psd1")
         OutputDirectory            = (Join-Path -Path $buildPath -ChildPath "out/$moduleName")
@@ -183,7 +183,20 @@ task Build Clean, {
         UnversionedOutputDirectory = $true
         ErrorAction                = 'Stop'
     }
-    [void] (Build-Module @requestParam)
+    <#     # Add pre-release tag if needed
+    if ($ReleaseType -ne 'Release') {
+        # The module version (must be a valid System.Version such as PowerShell supports for modules)
+        $requestParam.[version]$Version = (($SemanticVersion.Split('+')[0].Split('-', 2)[0])),
+        # Setting pre-release forces the release to be a pre-release.
+        # Must be valid pre-release tag like PowerShellGet supports
+        $requestParam['Prerelease'] = $($SemanticVersion.Split('+')[0].Split('-', 2)[1])
+
+        # Build metadata (like the commit sha or the date).
+        # If a value is provided here, then the full Semantic version will be inserted to the release notes:
+        # Like: ModuleName v(Version(-Prerelease?)+BuildMetadata)
+        $requestParam['BuildMetadata'] = $($SemanticVersion.Split('+', 2)[1])
+    } #>
+    Build-Module @requestParam
 }
 
 # Synopsis: Publish the module to PSGallery

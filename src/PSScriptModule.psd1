@@ -13,9 +13,10 @@
     PrivateData       = @{
         PSData = @{
             Tags         = @('Powershell', 'Script', 'Template', 'Module')
-            ProjectUri   = 'https://github.com/warehousefinds/PSScriptModule.Template'
-            LicenseUri   = 'https://github.com/WarehouseFinds/PSScriptModule.Template/blob/main/LICENSE'
-            ReleaseNotes = 'https://github.com/WarehouseFinds/PSScriptModule.Template/releases'
+            ProjectUri   = 'https://github.com/warehousefinds/PSScriptModule'
+            LicenseUri   = 'https://github.com/WarehouseFinds/PSScriptModule/blob/main/LICENSE'
+            ReleaseNotes = 'https://github.com/WarehouseFinds/PSScriptModule/releases'
+            Prerelease   = ''
         }
     }
 }

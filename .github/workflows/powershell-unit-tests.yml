@@ -75,3 +75,14 @@ jobs:
           header: 'Code Coverage Report'
           recreate: true
           path: code-coverage-results.md
+
+      - name: Append Code Coverage to Job Summary
+        shell: pwsh
+        run: |
+          $coverageReport = Get-Content -Path 'code-coverage-results.md' -Raw
+          $summary = @"
+          ## Code Coverage Report
+
+          $coverageReport
+          "@
+          echo "$summary" >> $GITHUB_STEP_SUMMARY

@@ -5,23 +5,13 @@ permissions: read-all
 on:
   workflow_dispatch:
     inputs:
-      release-type:
-        description: 'Release Type [Release/Prerelease/Debug]'
-        required: true
-        default: Release
-        type: choice
-        options:
-          - Release
-          - Prerelease
-          - Debug
-
-      tag-version:
-        description: 'Tag version to use (e.g., 0.9.7 or v0.9.7) - leave empty to use current commit'
+      version-tag:
+        description: 'Version tag to use (e.g., 0.9.7 or v0.9.7) - leave empty to use current commit'
         required: false
         type: string
 
       publish:
-        description: 'Publish release to PSGallery (Release only)'
+        description: 'Publish release to PSGallery'
         required: false
         type: boolean
         default: false
@@ -45,6 +35,7 @@ jobs:
     name: Unit Tests
     needs: [setup]
     uses: ./.github/workflows/powershell-unit-tests.yml
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
     permissions:
       issues: write
       pull-requests: write
@@ -56,6 +47,7 @@ jobs:
     name: Static Code Analysis
     needs: [setup]
     uses: ./.github/workflows/powershell-static-code-analysis.yml
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
     permissions:
       issues: write
       pull-requests: write
@@ -67,6 +59,7 @@ jobs:
     name: Code Injection
     needs: [setup]
     uses: ./.github/workflows/powershell-code-injection-analysis.yml
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
     permissions:
       issues: write
       pull-requests: write
@@ -78,6 +71,7 @@ jobs:
     name: Semantic Code Analysis
     needs: [setup]
     uses: ./.github/workflows/powershell-semantic-code-analysis.yml
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
     permissions:
       security-events: write
       actions: read
@@ -91,9 +85,8 @@ jobs:
     permissions:
       contents: write
     with:
-      release-type: ${{ inputs.release-type || 'Release' }}
-      tag-version: ${{ inputs.tag-version || '' }}
-      publish: ${{ inputs.publish || false }}
+      version-tag: ${{ inputs['version-tag'] || '' }}
+      publish: ${{ inputs['publish'] || false }}
       module-list: ${{ needs.setup.outputs.module-list }}
     secrets:
       NUGETAPIKEY_PSGALLERY: ${{ secrets.NUGETAPIKEY_PSGALLERY }}
