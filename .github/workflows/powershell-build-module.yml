@@ -144,9 +144,9 @@ jobs:
             Body        = $body
             ContentType = 'application/json'
           }
-          $body = "@
+          $body = @"
           $($result.body)
-          @"
+          "@
           Write-Output "releaseNotes=$body" >> $env:GITHUB_OUTPUT
 
       - name: Create Release
