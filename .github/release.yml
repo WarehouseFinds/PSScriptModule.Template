@@ -4,9 +4,19 @@ changelog:
     labels:
       - ignore
   categories:
+    - title: 💥 Breaking Changes
+      labels:
+      - breaking
+      - major
     - title: 🚀 Features
       labels:
         - feature
+        - enhancement
     - title: 🐛 Fixes
       labels:
         - bug
+        - fix
+    - title: 🧰 Maintenance
+      labels:
+        - chore
+        - refactor
