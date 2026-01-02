@@ -156,7 +156,7 @@ jobs:
       - name: Create Release
         id: create_release
         uses: actions/create-release@0cb9c9b65d5d1901c1f53e5e66eaf4afd303e70e #v1.1.4
-        if: github.ref_name == 'main' && github.event_name == 'workflow_dispatch'
+        if: github.ref_name == 'main' && (github.event_name == 'workflow_dispatch' || github.event_name == 'push')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -165,7 +165,7 @@ jobs:
           body: |
             ${{ steps.generate_release_notes.outputs.releaseNotes }}
           draft: false
-          prerelease: if ${{ env.releaseType }} == 'Prerelease' then true else false
+          prerelease: ${{ env.releaseType == 'Prerelease' }}
 
       - name: Commit generated help
         if: github.ref_name == 'main' && github.event_name == 'push'
