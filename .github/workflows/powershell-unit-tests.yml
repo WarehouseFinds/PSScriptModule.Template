@@ -39,10 +39,7 @@ jobs:
         if: (!cancelled())
         with:
           check_run: false
-          check_name: ">> Report: Unit Tests"
-          check_run_annotations	: all tests, skipped tests
           job_summary: true
-          comment_title:  Unit Test Report
           comment_mode: off
           fail_on: test failures
           files: |
@@ -62,17 +59,17 @@ jobs:
           reporttypes: 'HtmlInline;MarkdownSummaryGithub'
           sourcedirs: 'src'
           verbosity: 'Info'
-          title: 'Code Coverage Report'
-          tag: '${{ github.ref_name }}_${{ github.sha }}'
+          #title: 'Code Coverage Report'
+          tag: '${{ github.event_name }}[${{ github.ref }}]_SHA[${{ github.sha }}]'
           toolpath: 'reportgeneratortool'
 
       - name: Upload coverage report artifact
         uses: actions/upload-artifact@v4
         with:
-          name: CoverageReport # Artifact name        
-          path: test-results/codecoverage/report # Directory containing files to upload
+          name: CoverageReport
+          path: test-results/codecoverage/report
 
           
-      - name: Publish coverage in build summary # Only applicable if 'MarkdownSummaryGithub' or one of the other Markdown report types is generated
-        run: cat test-results/codecoverage/report/SummaryGithub.md >> $GITHUB_STEP_SUMMARY # Adjust path and filename if necessary
+      - name: Publish code coverage under job summary
+        run: cat test-results/codecoverage/report/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
         shell: bash
