@@ -1,20 +1,15 @@
 name: CI
-run-name: CI • ${{ github.repository }} • ${{ github.event_name }} • ${{ github.ref_name }}
+run-name: CI Workflow • ${{ github.repository }} • ${{ github.event_name }} • ${{ github.ref_name }}
 permissions: read-all
 
 on:
   workflow_dispatch:
     inputs:
       version-tag:
-        description: 'Version tag to use (e.g., 0.9.7 or v0.9.7) - leave empty to use current commit'
+        description: 'Version tag (e.g., v0.9.7) - leave empty to use last commit'
         required: false
         type: string
 
-      publish:
-        description: 'Publish release to PSGallery'
-        required: false
-        type: boolean
-        default: false
   push:
     branches:
       - main
@@ -87,7 +82,6 @@ jobs:
       contents: write
     with:
       version-tag: ${{ inputs['version-tag'] || '' }}
-      publish: ${{ inputs['publish'] || false }}
       module-list: ${{ needs.setup.outputs.module-list }}
     secrets:
       NUGETAPIKEY_PSGALLERY: ${{ secrets.NUGETAPIKEY_PSGALLERY }}
