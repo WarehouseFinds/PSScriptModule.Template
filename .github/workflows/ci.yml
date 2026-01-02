@@ -81,6 +81,7 @@ jobs:
   build:
     name: Build
     needs: [setup, unit-tests, static-code-analysis, code-injection, semantic-code-analysis]
+    if: always() && !cancelled()
     uses: ./.github/workflows/powershell-build-module.yml
     permissions:
       contents: write
