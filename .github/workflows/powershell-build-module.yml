@@ -151,7 +151,7 @@ jobs:
 
           Write-Output  'Release Notes for v${{ env.majorMinorPatch }}<<EOF' >> $env:GITHUB_OUTPUT
           Write-Output  $result.body >> $env:GITHUB_OUTPUT
-          Write-Output  'EOF' >>> $env:GITHUB_OUTPUT
+          Write-Output  'EOF' >> $env:GITHUB_OUTPUT
 
       - name: Create Release
         id: create_release
