@@ -34,8 +34,6 @@ jobs:
           repository: ${{ github.repository }}
           ref: ${{ inputs['version-tag'] || '' }}
           fetch-depth: 0
-          fetch-tags: true
-
       - name: Install GitVersion tool
         uses: gittools/actions/gitversion/setup@d0139503a9321f76b4a417dfdc8aebcec24decdd #v4.2.0
         with:
@@ -127,7 +125,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          #git fetch --tags
+          git fetch --tags
           # Find previous tag based on release type
           # - For 'Prerelease', use the latest tag (Release notes are generated from last commit to latest tag)
           # - For 'Release', use the second latest tag (Release notes are generated from last tag to second latest tag)
