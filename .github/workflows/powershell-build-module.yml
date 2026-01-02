@@ -135,7 +135,7 @@ jobs:
             tag_name = 'v${{ env.majorMinorPatch }}'
             target_commitish = "main"
             previous_tag_name = $previousTag
-          } | ConvertTo-Json
+          }
 
           $requestParams = @{
             Method      = 'Post'
@@ -144,7 +144,7 @@ jobs:
               Authorization = "Bearer $env:GITHUB_TOKEN"
               Accept = 'application/vnd.github+json'
             }
-            Body        = $body
+            Body        = ($body | ConvertTo-Json)
             ContentType = 'application/json'
           }
           $result = Invoke-RestMethod @requestParams

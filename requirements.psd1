@@ -1,50 +1,11 @@
-# Project dependencies
+# PSDepend dependency specification
+# See https://github.com/RamblingCookieMonster/PSDepend for more information
 @{
-    Packages     = @(
-        @{
-            Name       = 'InvokeBuild'
-            Repository = 'PSGallery'
-            Type       = 'Release'
-            Version    = '5.14.22'
-        }
-        @{
-            Name       = 'ModuleBuilder'
-            Repository = 'PSGallery'
-            Type       = 'Release'
-            Version    = '3.1.8'
-        }
-        @{
-            Name       = 'Pester'
-            Repository = 'PSGallery'
-            Type       = 'Release'
-            Version    = '5.7.1'
-        }
-        @{
-            Name       = 'PSScriptAnalyzer'
-            Repository = 'PSGallery'
-            Type       = 'Release'
-            Version    = 'latest'
-        }
-        @{
-            Name       = 'InjectionHunter'
-            Repository = 'PSGallery'
-            Type       = 'Release'
-            Version    = '1.0.0'
-        }
-        @{
-            Name       = 'Microsoft.PowerShell.PlatyPS'
-            Repository = 'PSGallery'
-            Type       = 'Release'
-            Version    = '1.0.1'
-        }
-    )
-    Repositories = @(
-        # Default PSGallery repository, installed by PowerShellGet automatically
-        <# @{
-            Name               = 'PSGallery'
-            SourceLocation     = 'https://www.powershellgallery.com/api/v2/'
-            PublishLocation    = 'https://www.powershellgallery.com/api/v2/package/'
-            InstallationPolicy = 'Trusted'
-        } #>
-    )
+    # Build and test dependencies
+    'InvokeBuild'                  = @{ Version = '5.14.22'; Repository = 'PSGallery' }
+    'ModuleBuilder'                = @{ Version = '3.1.8'; Repository = 'PSGallery' }
+    'Pester'                       = @{ Version = '5.7.1'; Repository = 'PSGallery' }
+    'PSScriptAnalyzer'             = @{ Version = 'latest'; Repository = 'PSGallery' }
+    'InjectionHunter'              = @{ Version = '1.0.0'; Repository = 'PSGallery' }
+    'Microsoft.PowerShell.PlatyPS' = @{ Version = '1.0.1'; Repository = 'PSGallery' }
 }

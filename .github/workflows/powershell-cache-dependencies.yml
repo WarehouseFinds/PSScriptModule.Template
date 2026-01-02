@@ -19,41 +19,27 @@ jobs:
         with:
           repository: ${{ github.repository }}
 
-      - name: Register PSRepositories
-        shell: pwsh
-        run: |
-          # Register required PSRepositories
-          $moduleRequirements = Import-PowerShellDataFile -Path './requirements.psd1'
-          foreach ($repository in $moduleRequirements.Repositories) {
-              $requestParams = @{
-                  Name               = $repository.Name
-                  SourceLocation     = $repository.SourceLocation
-                  PublishLocation    = $repository.PublishLocation
-                  InstallationPolicy = $repository.InstallationPolicy
-                  ErrorAction        = 'Stop'
-              }
-              [void] (Register-PSRepository @requestParams)
-          }
-
       - name: Resolve module dependencies
         id: resolve-dependencies
         shell: pwsh
         run: |
           # Resolve module dependencies from requirements.psd1
           $moduleRequirements = Import-PowerShellDataFile -Path './requirements.psd1'
-          $packages = @($moduleRequirements.Packages)
           $moduleList = (
-              $packages |
+              $moduleRequirements.GetEnumerator() |
                   ForEach-Object {
-                      $name = if ($_.Repository) {
-                          "$($_.Repository)\$($_.Name)"
+                      $moduleName = $_.Key
+                      $moduleInfo = $_.Value
+                      
+                      $name = if ($moduleInfo.Repository -and $moduleInfo.Repository -ne 'PSGallery') {
+                          "$($moduleInfo.Repository)\$moduleName"
                       }
                       else {
-                          $_.Name
+                          $moduleName
                       }
 
-                      if ($_.Version -ne 'latest') {
-                          "$($name):$($_.Version)"
+                      if ($moduleInfo.Version -and $moduleInfo.Version -ne 'latest') {
+                          "$($name):$($moduleInfo.Version)"
                       }
                       else {
                           "$($name)"
@@ -74,7 +60,6 @@ jobs:
         run: |
           # Verify that required modules are installed
           $moduleRequirements = Import-PowerShellDataFile -Path './requirements.psd1'
-          $packages = @($moduleRequirements.Packages)
-          foreach ($package in $packages) {
-              Get-Module -ListAvailable -Name $package.Name -ErrorAction Stop
+          foreach ($moduleName in $moduleRequirements.Keys) {
+              Get-Module -ListAvailable -Name $moduleName -ErrorAction Stop
           }
