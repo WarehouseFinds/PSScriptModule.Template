@@ -92,8 +92,8 @@ task Invoke-UnitTests {
         CodeCoverage = @{
             Enabled        = $true
             Path           = $Script:moduleSourcePath
-            OutputFormat   = 'Cobertura'
-            OutputPath     = "$testOutputPath\code-coverage.xml"
+            OutputFormat   = 'JaCoCo'
+            OutputPath     = "$testOutputPath\codecoverage\code-coverage.xml"
             OutputEncoding = 'UTF8'
         }
     }
