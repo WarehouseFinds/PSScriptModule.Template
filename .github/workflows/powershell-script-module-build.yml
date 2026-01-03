@@ -1,0 +1,131 @@
+name: CI Build PowerShell Module
+on:
+  workflow_call:
+    inputs:
+      module-list:
+        description: 'Comma-separated list of PowerShell modules to install and cache'
+        required: true
+        type: string
+
+      release-type:
+        description: 'Type of release (e.g., Release, Prerelease, Debug)'
+        required: false
+        default: 'Debug'
+        type: string
+
+jobs:
+  build:
+    name: PowerShell Module
+    runs-on: [ubuntu-latest]
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 #v6.01
+        with:
+          repository: ${{ github.repository }}
+          fetch-depth: 0
+
+      - name: Install GitVersion tool
+        uses: gittools/actions/gitversion/setup@d0139503a9321f76b4a417dfdc8aebcec24decdd #v4.2.0
+        with:
+          versionSpec: '6.5.1'
+
+      - name: Get semantic build version
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@d0139503a9321f76b4a417dfdc8aebcec24decdd #v4.2.0
+        with:
+          configFilePath: GitVersion.yml
+          disableShallowCloneCheck: true
+
+      - name: Restore cached PowerShell modules
+        uses: potatoqualitee/psmodulecache@ee5e9494714abf56f6efbfa51527b2aec5c761b8 #v6.2.1
+        with:
+          modules-to-cache: ${{ inputs['module-list'] }}
+          shell: pwsh
+          updatable: false
+
+      - name: Determine build version
+        id: build-version
+        shell: pwsh
+        run: |
+          switch ("${{ github.event_name }}") {
+            'workflow_dispatch' { $releaseType = 'Release' }
+            'pull_request'      { $releaseType = 'Debug' }
+            'push' {
+              if ('${{ github.ref_name }}' -eq 'main') {
+                $releaseType = 'Prerelease'
+              } else {
+                $releaseType = 'Debug'
+              }
+            }
+            default { $releaseType = 'Debug' }
+          }
+          echo "releaseType=$releaseType" >> $env:GITHUB_ENV
+
+          switch ($releaseType) {
+              'Release' {
+                  # e.g. 1.2.4-5  ->  1.2.4
+                  $buildVersion = $env:semVer.Split('-', 2)[0]
+              }
+              'Prerelease' {
+                  # e.g. 1.2.4-5  ->  1.2.4-Prerelease-5
+                  $buildVersion = $env:semVer.Split('-', 2)[0] + '-Prerelease'
+              }
+              'Debug' {
+                  # 1.2.4-PullRequest1234 -> 1.2.4-PullRequest1234
+                  $buildVersion = $env:semVer
+              }
+          }
+          echo "buildVersion=$buildVersion" >> $env:GITHUB_ENV
+
+      - name: Run build via Invoke-Build
+        shell: pwsh
+        run: |
+          Set-StrictMode -Version Latest
+          [void] (Import-Module InvokeBuild)
+          $requestParam = @{
+              SemanticVersion = '${{ steps.build-version.outputs.buildVersion }}'
+              Task            = 'Build'
+          }
+          Invoke-Build @requestParam
+
+      - name: Run Export-CommandHelp via Invoke-Build
+        shell: pwsh
+        run: |
+          # PlatyPS 1.0.1+ is not compatible with Set-StrictMode
+          # New-MarkdownCommandHelp fails with:
+          #  > The property 'inputTypes' cannot be found on this object. Verify that the property exists.
+          Set-StrictMode -off
+          [void] (Import-Module InvokeBuild)
+          $requestParam = @{
+              SemanticVersion = '${{ steps.build-version.outputs.majorMinorPatch }}'
+              Task            = 'Export-CommandHelp'
+          }
+          Invoke-Build @requestParam
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f #v6
+        if: (!cancelled())
+        with:
+          name: build-${{ steps.build-version.outputs.semVer }}
+          path: build/**
+          if-no-files-found: warn
+
+      - name: Commit generated help
+        if: github.ref_name == 'main' && github.event_name == 'push'
+        shell: bash
+        run: |
+          git add docs/help
+          if git diff --cached --quiet; then
+            echo "No help changes to commit"
+            exit 0
+          fi
+
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit -m "Update PowerShell help for release v${{ steps.build-version.outputs.majorMinorPatch }}"
+          git push origin HEAD:main
+
+

@@ -1,4 +1,4 @@
-name: CI Build PowerShell Module
+name: Release PowerShell Script Module
 on:
   workflow_call:
     inputs:

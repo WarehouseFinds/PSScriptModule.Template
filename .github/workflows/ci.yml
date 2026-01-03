@@ -3,33 +3,31 @@ run-name: CI Workflow • ${{ github.repository }} • ${{ github.event_name }} 
 permissions: read-all
 
 on:
-  workflow_dispatch:
-    inputs:
-      version-tag:
-        description: 'Version tag (e.g., v0.9.7) - leave empty to use last commit'
-        required: false
-        type: string
-
   push:
     branches:
       - main
-    paths-ignore:
-      - 'docs/help/**'
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - '.github/workflows/**'
   pull_request:
     branches:
       - main
       - 'release/**'
       - 'hotfix/**'
+    paths:
+      - 'src/**'
+      - 'tests/**'
 
 jobs:
   setup:
     name: Setup
-    uses: ./.github/workflows/powershell-cache-dependencies.yml
+    uses: WarehouseFinds/PSScriptModule/.github/workflows/powershell-script-module-cache-dependencies.yml@main
 
   unit-tests:
     name: Unit Tests
     needs: [setup]
-    uses: ./.github/workflows/powershell-unit-tests.yml
+    uses: WarehouseFinds/PSScriptModule/.github/workflows/powershell-unit-tests.yml@main
     if: github.event_name == 'pull_request' || github.event_name == 'push'
     permissions:
       issues: write
@@ -41,7 +39,7 @@ jobs:
   static-code-analysis:
     name: Static Code Analysis
     needs: [setup]
-    uses: ./.github/workflows/powershell-static-code-analysis.yml
+    uses: WarehouseFinds/PSScriptModule/.github/workflows/powershell-script-module-analysis-static-code.yml@main
     if: github.event_name == 'pull_request' || github.event_name == 'push'
     permissions:
       issues: write
@@ -53,7 +51,7 @@ jobs:
   code-injection:
     name: Code Injection
     needs: [setup]
-    uses: ./.github/workflows/powershell-code-injection-analysis.yml
+    uses: WarehouseFinds/PSScriptModule/.github/workflows/powershell-script-module-analysis-code-injection.yml@main
     if: github.event_name == 'pull_request' || github.event_name == 'push'
     permissions:
       issues: write
@@ -65,7 +63,7 @@ jobs:
   semantic-code-analysis:
     name: Semantic Code Analysis
     needs: [setup]
-    uses: ./.github/workflows/powershell-semantic-code-analysis.yml
+    uses: WarehouseFinds/PSScriptModule/.github/workflows/powershell-script-module-analysis-semantic-code.yml@main
     if: github.event_name == 'pull_request' || github.event_name == 'push'
     permissions:
       security-events: write
@@ -76,12 +74,9 @@ jobs:
   build:
     name: Build
     needs: [setup, unit-tests, static-code-analysis, code-injection, semantic-code-analysis]
-    if: always() && !cancelled()
-    uses: ./.github/workflows/powershell-build-module.yml
+    uses: WarehouseFinds/PSScriptModule/.github/workflows/powershell-script-module-build.yml@main
     permissions:
       contents: write
     with:
-      version-tag: ${{ inputs['version-tag'] || '' }}
       module-list: ${{ needs.setup.outputs.module-list }}
-    secrets:
-      NUGETAPIKEY_PSGALLERY: ${{ secrets.NUGETAPIKEY_PSGALLERY }}
+      release-type: 'Debug'

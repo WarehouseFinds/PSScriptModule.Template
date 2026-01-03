@@ -1,0 +1,41 @@
+name: Release
+run-name: Release • ${{ github.repository }} • ${{ github.event_name }} • ${{ github.ref_name }}
+permissions: read-all
+
+on:
+  workflow_call:
+    inputs:
+      version-tag:
+        description: 'Version tag (e.g., v0.9.7) - leave empty to use latest commit'
+        required: false
+        type: string
+      publish:
+        description: 'Publish release to PSGallery'
+        required: false
+        type: boolean
+        default: false
+      module-list:
+        description: 'Comma-separated list of PowerShell modules to install and cache'
+        required: true
+        type: string
+    secrets:
+      NUGETAPIKEY_PSGALLERY:
+        description: 'NuGet API Key for publishing to PSGallery'
+        required: false
+
+jobs:
+  setup:
+    name: Setup
+    uses: WarehouseFinds/PSScriptModule/.github/workflows/powershell-script-module-cache-dependencies.yml@main
+
+  build:
+    name: Build
+    needs: [setup]
+    uses: WarehouseFinds/PSScriptModule/.github/workflows/powershell-script-module-build.yml@main
+    permissions:
+      contents: write
+    with:
+      version-tag: ${{ inputs['version-tag'] || '' }}
+      module-list: ${{ needs.setup.outputs.module-list }}
+    secrets:
+      NUGETAPIKEY_PSGALLERY: ${{ secrets.NUGETAPIKEY_PSGALLERY }}
