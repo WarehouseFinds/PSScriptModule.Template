@@ -40,7 +40,7 @@ jobs:
 
   release:
     name: Release
-    needs: [build]
+    needs: [setup, build]
     uses: WarehouseFinds/PSScriptModule/.github/workflows/powershell-script-module-release.yml@main
     permissions:
       contents: write
@@ -50,5 +50,5 @@ jobs:
       publish-nugetorg: ${{ inputs.publish-nugetorg }}
       module-list: ${{ needs.setup.outputs.module-list }}
     secrets:
-      PSGALLERY-API-KEY: ${{ secrets.PSGALLERY-API-KEY }}
-      NUGETORG-API-KEY: ${{ secrets.NUGETORG-API-KEY }}
+      PSGALLERY_API_KEY: ${{ secrets.PSGALLERY_API_KEY }}
+      NUGETORG_API_KEY: ${{ secrets.NUGETORG_API_KEY }}

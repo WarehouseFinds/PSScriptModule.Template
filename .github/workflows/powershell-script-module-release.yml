@@ -19,10 +19,10 @@ on:
         required: true
         type: string
     secrets:
-      PSGALLERY-API-KEY:
+      PSGALLERY_API_KEY:
         description: 'PSGallery API Key'
         required: false
-      NUGETORG-API-KEY:
+      NUGETORG_API_KEY:
         description: 'NuGet.org API Key'
         required: false
 
