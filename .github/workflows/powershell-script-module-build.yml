@@ -72,7 +72,7 @@ jobs:
                   $buildVersion = $env:semVer
               }
           }
-          echo "build-version=$buildVersion" >> $env:GITHUB_OUTPUT -Append
+          echo "build-version=$buildVersion" >> $env:GITHUB_OUTPUT
 
       - name: Run build via Invoke-Build
         shell: pwsh
