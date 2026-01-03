@@ -1,4 +1,4 @@
-name: '[template] PS - Build'
+name: '[template] PS Build'
 on:
   workflow_call:
     inputs:

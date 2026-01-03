@@ -1,4 +1,4 @@
-name: '[template] PS - Unit Tests'
+name: '[template] PS Unit Tests'
 on:
   workflow_call:
     inputs:

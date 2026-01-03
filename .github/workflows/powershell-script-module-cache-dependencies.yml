@@ -1,4 +1,4 @@
-name: '[template] PS - Install/Cache Dependencies'
+name: '[template] PS Cache Dependencies'
 permissions: read-all
 on:
   workflow_call:
