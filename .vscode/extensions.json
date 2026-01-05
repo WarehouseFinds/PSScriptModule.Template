@@ -2,13 +2,17 @@
     "recommendations": [
         "GitHub.copilot",
         "GitHub.copilot-chat",
+        // PowerShell extension for VS Code
         "ms-vscode.powershell",
-        "ms-vscode.powershell-preview",
+        // Pester Test extension for VS Code
+        "pspester.pester-test",
+        // EditorConfig extension for VS Code
         "editorconfig.editorconfig",
+        // Markdown linting extension
+        "DavidAnson.vscode-markdownlint",
         // GitHub Actions extension
         "github.vscode-github-actions",
         // Azure Pipelines extension
-        "ms-azure-devops.azure-pipelines",
-        "DavidAnson.vscode-markdownlint"
+        "ms-azure-devops.azure-pipelines"
     ]
 }

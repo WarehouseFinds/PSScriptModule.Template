@@ -2,18 +2,20 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/powershell
 {
     "name": "PowerShell-PSScriptModule",
-    // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-    "image": "mcr.microsoft.com/powershell:lts-debian-11",
-    "features": {
-        "ghcr.io/devcontainers/features/common-utils:2": {
-            "installZsh": "true",
-            "username": "vscode",
-            "upgradePackages": "false",
-            "nonFreePackages": "true"
-        }
+    "build": {
+        // Path is relative to the devcontainer.json file.
+        "dockerfile": "Dockerfile"
     },
+    //"features": {
+    //    "ghcr.io/devcontainers/features/common-utils:2": {
+    //        "installZsh": "true",
+    //        "username": "vscode",
+    //        "upgradePackages": "false",
+    //        "nonFreePackages": "true"
+    //    }
+    //},
 
-    "postCreateCommand": "sudo chsh vscode -s \"$(which pwsh)\"",
+    // "postCreateCommand": "sudo chsh vscode -s \"$(which pwsh)\"",
 
     // Configure tool-specific properties.
     "customizations": {
@@ -21,29 +23,52 @@
         "vscode": {
             // Set *default* container specific settings.json values on container create.
             "settings": {
-                "terminal.integrated.defaultProfile.linux": "pwsh"
+                // Set the default shell to PowerShell
+                "terminal.integrated.defaultProfile.linux": "pwsh",
+                "terminal.integrated.profiles.linux": {
+                    "bash": {
+                        "path": "bash"
+                    },
+                    "pwsh": {
+                        "path": "pwsh"
+                    }
+                },
+
+                // Disable the startup editor for devcontainer
+                "workbench.startupEditor": "none",
+
+                // PowerShell extension settings for devcontainer
+                "powershell.integratedConsole.showOnStartup": false,
+                "powershell.startAsLoginShell.linux": false,
+
+                // Disable extension recommendations for devcontainer
+                "extensions.ignoreRecommendations": true
             },
 
             // Add the IDs of extensions you want installed when the container is created.
             "extensions": [
-                "GitHub.copilot",
-                "GitHub.copilot-chat",
                 "ms-vscode.powershell",
-                "ms-vscode.powershell-preview",
+                "pspester.pester-test",
                 "editorconfig.editorconfig",
-                // GitHub Actions extension
-                "github.vscode-github-actions",
-                // Azure Pipelines extension
-                "ms-azure-devops.azure-pipelines",
                 "DavidAnson.vscode-markdownlint"
-
-            ]
+            ],
+            "remote.extensionKind": {
+                "github.copilot": [ "ui" ],
+                "github.copilot-chat": [ "ui" ],
+                "github.vscode-github-actions": [ "ui" ]
+            }
         }
-    }
+    },
+
+    // Mount .gitconfig and GitHub CLI config from host to inherit credentials
+    "mounts": [
+        "source=${localEnv:HOME}${localEnv:USERPROFILE}/.gitconfig,target=/home/vscode/.gitconfig,type=bind,consistency=cached",
+        "source=${localEnv:HOME}${localEnv:USERPROFILE}/.config/gh,target=/home/vscode/.config/gh,type=bind,consistency=cached"
+    ],
 
     // Use 'forwardPorts' to make a list of ports inside the container available locally.
     // "forwardPorts": [],
 
     // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-    // "remoteUser": "root"
+    "remoteUser": "vscode"
 }
