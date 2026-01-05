@@ -60,10 +60,9 @@
         }
     },
 
-    // Mount .gitconfig, SSH keys, and GitHub CLI config from host to inherit credentials
+    // Mount .gitconfig and GitHub CLI config from host to inherit credentials
     "mounts": [
         "source=${localEnv:HOME}${localEnv:USERPROFILE}/.gitconfig,target=/home/vscode/.gitconfig,type=bind,consistency=cached",
-        "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached",
         "source=${localEnv:HOME}${localEnv:USERPROFILE}/.config/gh,target=/home/vscode/.config/gh,type=bind,consistency=cached"
     ],
 
