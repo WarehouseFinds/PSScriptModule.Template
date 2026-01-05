@@ -2,18 +2,21 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/powershell
 {
     "name": "PowerShell-PSScriptModule",
-    "build": {
-        // Path is relative to the devcontainer.json file.
-        "dockerfile": "Dockerfile"
+    "image": "ubuntu:latest",
+
+    // Use 'features' to install additional components in the container.
+    "features": {
+        "ghcr.io/devcontainers/features/common-utils:2": {
+            "username": "vscode",
+            "upgradePackages": "true"
+        },
+        "ghcr.io/devcontainers/features/powershell:1": {
+            "version": "latest"
+        },
+        "ghcr.io/devcontainers/features/github-cli:1": {
+            "version": "latest"
+        }
     },
-    //"features": {
-    //    "ghcr.io/devcontainers/features/common-utils:2": {
-    //        "installZsh": "true",
-    //        "username": "vscode",
-    //        "upgradePackages": "false",
-    //        "nonFreePackages": "true"
-    //    }
-    //},
 
     // "postCreateCommand": "sudo chsh vscode -s \"$(which pwsh)\"",
 
@@ -24,6 +27,7 @@
             // Set *default* container specific settings.json values on container create.
             "settings": {
                 // Set the default shell to PowerShell
+                "terminal.integrated.enablePersistentSessions": false,
                 "terminal.integrated.defaultProfile.linux": "pwsh",
                 "terminal.integrated.profiles.linux": {
                     "bash": {
@@ -33,13 +37,19 @@
                         "path": "pwsh"
                     }
                 },
+                // Prevent automatic terminal creation
+                "terminal.integrated.automationProfile.linux": null,
 
                 // Disable the startup editor for devcontainer
                 "workbench.startupEditor": "none",
 
+                // GitHub Copilot settings for devcontainer
+                "github.copilot.chat.enableTerminalIntegration": true,
+
                 // PowerShell extension settings for devcontainer
                 "powershell.integratedConsole.showOnStartup": false,
                 "powershell.startAsLoginShell.linux": false,
+                "powershell.powerShellAdditionalExePaths": { },
 
                 // Disable extension recommendations for devcontainer
                 "extensions.ignoreRecommendations": true
@@ -59,6 +69,18 @@
             }
         }
     },
+
+    // Run after container is created (one time only)
+    "postCreateCommand": "pwsh -NoProfile -Command 'Write-Host \"Container created. Installing dependencies...\"'",
+
+    // Run after container starts (each time)
+    "postStartCommand": "pwsh -NoProfile -Command 'Write-Host \"Container started.\"'",
+
+    // Run after attaching to container
+    "postAttachCommand": "pwsh -NoProfile -Command 'Write-Host \"Dev container ready. All configurations processed.\"'",
+
+    // Wait for commands to complete before marking ready
+    "waitFor": "postAttachCommand",
 
     // Mount .gitconfig and GitHub CLI config from host to inherit credentials
     "mounts": [
