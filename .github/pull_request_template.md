@@ -6,22 +6,13 @@
 
 <!-- Mark the relevant option with an 'x' -->
 
-- [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] New feature (non-breaking change which adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
+- [ ] Bug fix
+- [ ] New feature
+- [ ] Breaking change
 - [ ] Documentation update
 - [ ] Code refactoring
 - [ ] Performance improvement
 - [ ] Test improvement
-
-## Semantic Versioning
-
-<!-- Include the appropriate keyword in your commit message to control versioning -->
-
-- [ ] `+semver: major` - Breaking changes (1.0.0 → 2.0.0)
-- [ ] `+semver: minor` - New features (1.0.0 → 1.1.0)
-- [ ] `+semver: patch` - Bug fixes (1.0.0 → 1.0.1)
-- [ ] `+semver: none` - No version change (documentation, tests)
 
 ## Checklist
 
@@ -38,7 +29,6 @@
 
 ### Documentation
 
-- [ ] Comment-based help is complete and accurate
 - [ ] Examples included in help documentation
 - [ ] README.md updated (if applicable)
 

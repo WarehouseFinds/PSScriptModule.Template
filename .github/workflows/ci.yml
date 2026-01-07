@@ -20,6 +20,16 @@ on:
       - 'tests/**'
 
 jobs:
+  label:
+  - name: Execute assign labels
+    id: action-assign-labels
+    uses: mauroalderete/action-assign-labels@v1
+    with:
+      pull-request-number: ${{ github.event.pull_request.number }}
+      github-token: ${{ secrets.GITHUB_TOKEN }}
+      conventional-commits: '.github/labeler.yml'
+      apply-changes: true
+
   setup:
     name: Setup
     uses: WarehouseFinds/PSScriptModule/.github/workflows/powershell-script-module-cache-dependencies.yml@main

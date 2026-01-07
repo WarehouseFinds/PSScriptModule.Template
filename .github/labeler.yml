@@ -1,0 +1,98 @@
+# GitHub Labeler Configuration
+# Automatically labels pull requests based on file paths changed
+# https://github.com/actions/labeler
+
+# Module
+manifest:
+  - changed-files:
+    - any-glob-to-any-file: 'src/**/*.psd1'
+
+# Source Code
+code:
+  - changed-files:
+    - any-glob-to-any-file: 'src/**/*.ps1'
+
+# Tests
+tests:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'tests/**/*.Tests.ps1'
+      - 'src/**/*.Tests.ps1'
+unit:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'src/**/*.Tests.ps1'
+
+# Documentation
+documentation:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'docs/**/*.md'
+      - '*.md'
+
+# Build & CI/CD
+build:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '*.build.ps1'
+
+# CI/CD
+ci-cd:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '.github/workflows/**/*.yml'
+      - '.github/workflows/**/*.yaml'
+
+# GitHub Configuration
+github:
+  - changed-files:
+    - any-glob-to-any-file: '.github/**/*'
+
+# DevContainer
+devcontainer:
+  - changed-files:
+    - any-glob-to-any-file: '.devcontainer/**/*'
+
+# Dependencies
+dependencies:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'requirements.psd1'
+      - '.github/dependabot.yml'
+
+# Branch-based labels
+breaking:
+ - head-branch: ['^breaking', 'breaking', 'major']
+
+feature:
+ - head-branch: ['^feature', 'feature', 'enhancement', 'feat', 'add', 'minor']
+
+bugfix:
+ - head-branch: ['^bugfix', 'bugfix', 'fix', 'patch', 'hotfix']
+
+release:
+ - base-branch: 'main'
+
+ # Conventional Commit-based labels
+conventional-commits:
+- type: 'bugfix'
+  nouns: ['bugfix', 'fix', 'patch', 'hotfix']
+  labels: ['bugfix']
+- type: 'feature'
+  nouns: ['feature', 'enhancement', 'feat', 'add', 'minor']
+  labels: ['feature']
+- type: 'breaking'
+  nouns: ['breaking', 'major']
+  labels: ['breaking']
+- type: 'documentation'
+  nouns: ['document','documentation']
+  labels: ['documentation']
+- type: 'build'
+  nouns: ['build','rebuild']
+  labels: ['build']
+- type: 'optimization'
+  nouns: ['performance', 'optimize', 'optimization']
+  labels: ['optimization']
+- type: 'config'
+  nouns: ['config', 'conf', 'cofiguration', 'configure']
+  labels: ['config']
