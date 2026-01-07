@@ -121,6 +121,6 @@ jobs:
     with:
       release-type: 'Debug'
       module-list: ${{ needs.setup.outputs.module-list }}
-  if: >
-    needs.unit-tests.result == 'skipped' ||
-    needs.unit-tests.result == 'success'
+    if: >
+      needs.unit-tests.result == 'skipped' ||
+      needs.unit-tests.result == 'success'
