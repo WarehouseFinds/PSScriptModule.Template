@@ -53,3 +53,12 @@ jobs:
           delete_workflow_pattern: cleanup.yml
           retain_days: ${{ github.event.inputs.retain-days || 1 }}
           keep_minimum_runs: ${{ github.event.inputs.minimum-runs || 1 }}
+
+      - name: Delete workflow runs (Copilot code reviews)
+        uses: Mattraks/delete-workflow-runs@5bf9a1dac5c4d041c029f0a8370ddf0c5cb5aeb7  #v2.1
+        with:
+          token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          delete_workflow_pattern: copilot | Copilot
+          retain_days: ${{ github.event.inputs.retain-days || 1 }}
+          keep_minimum_runs: ${{ github.event.inputs.minimum-runs || 1 }}
