@@ -11,7 +11,11 @@ on:
         required: false
         type: number
         default: 2
-        
+      retain-days:
+        description: 'Number of days to retain workflow runs'
+        required: false
+        type: number
+        default: 5
 
 jobs:
   cleanup-runs:
@@ -27,3 +31,4 @@ jobs:
           repository: ${{ github.repository }}
           keep_minimum_runs: ${{ github.event.inputs.minimum-runs || 5 }}
           check_pullrequest_exist: true
+          retain_days: ${{ github.event.inputs.retain-days || 5 }}
