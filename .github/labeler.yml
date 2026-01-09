@@ -2,58 +2,48 @@
 # Automatically labels pull requests based on file paths changed
 # https://github.com/actions/labeler
 
-# Module
-manifest:
+# Path-based labels
+source:
   - changed-files:
-    - any-glob-to-any-file: 'src/**/*.psd1'
+    - any-glob-to-any-file:
+      - 'src/**/*.ps1'
+      - 'src/**/*.psd1'
 
-# Source Code
-code:
-  - changed-files:
-    - any-glob-to-any-file: 'src/**/*.ps1'
-
-# Tests
 tests:
   - changed-files:
     - any-glob-to-any-file:
       - 'tests/**/*.Tests.ps1'
       - 'src/**/*.Tests.ps1'
-unit:
-  - changed-files:
-    - any-glob-to-any-file:
-      - 'src/**/*.Tests.ps1'
 
-# Documentation
-documentation:
+docs:
   - changed-files:
     - any-glob-to-any-file:
       - 'docs/**/*.md'
       - '*.md'
 
-# Build & CI/CD
 build:
   - changed-files:
     - any-glob-to-any-file:
       - '*.build.ps1'
 
-# CI/CD
 ci-cd:
   - changed-files:
     - any-glob-to-any-file:
       - '.github/workflows/**/*.yml'
       - '.github/workflows/**/*.yaml'
 
-# GitHub Configuration
 github:
   - changed-files:
     - any-glob-to-any-file: '.github/**/*'
 
-# DevContainer
+vscode:
+  - changed-files:
+    - any-glob-to-any-file: '.vscode/**/*'
+
 devcontainer:
   - changed-files:
     - any-glob-to-any-file: '.devcontainer/**/*'
 
-# Dependencies
 dependencies:
   - changed-files:
     - any-glob-to-any-file:
@@ -70,9 +60,6 @@ feature:
 bugfix:
  - head-branch: ['^bugfix', 'bugfix', 'fix', 'patch', 'hotfix']
 
-release:
- - base-branch: 'main'
-
  # Conventional Commit-based labels
 conventional-commits:
 - type: 'bugfix'
@@ -84,15 +71,15 @@ conventional-commits:
 - type: 'breaking'
   nouns: ['breaking', 'major']
   labels: ['breaking']
-- type: 'documentation'
+- type: 'docs'
   nouns: ['document','documentation']
-  labels: ['documentation']
+  labels: ['docs']
 - type: 'build'
   nouns: ['build','rebuild']
   labels: ['build']
-- type: 'optimization'
+- type: 'performance'
   nouns: ['performance', 'optimize', 'optimization']
-  labels: ['optimization']
+  labels: ['performance']
 - type: 'config'
   nouns: ['config', 'conf', 'cofiguration', 'configure']
   labels: ['config']

@@ -12,6 +12,27 @@ changelog:
       labels:
         - feature
         - enhancement
-    - title: 🐛 Fixes
+    - title: 🐛 Bugfixes
       labels:
-        - "*"
+        - bugfix
+        - fix
+    - title: ⚡ Performance Improvements
+      labels:
+        - performance
+    - title: 🧑‍💻 Developer Experience
+      labels:
+        - vscode
+        - devcontainer
+    - title: 🧪 Tests
+      labels:
+        - tests
+    - title: 🛠️ Build and CI
+      labels:
+        - build
+        - ci-cd
+    - title: 📦 Dependencies
+      labels:
+        - dependencies
+    - title: 📚 Documentation
+      labels:
+        - docs
