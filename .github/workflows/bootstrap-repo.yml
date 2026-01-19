@@ -92,9 +92,8 @@ jobs:
             Author = "${{ github.repository_owner }}"
             CompanyName = "${{ github.repository_owner }}"
             Copyright = "(c) ${{ github.repository_owner }}. All rights reserved."
-            Description = "${{ needs.get_repo_state.outputs.description }}"
             RootModule = "${{ github.event.repository.name }}.psm1"
-            Description = "${{ github.event.repository.name }}"
+            Description = "${{ needs.get_repo_state.outputs.description }}"
             ProjectUri = "https://github.com/${{ github.repository }}"
             LicenseUri = "https://github.com/${{ github.repository }}/blob/main/LICENSE"
             ReleaseNotes = "https://github.com/${{ github.repository }}/releases"
@@ -108,9 +107,9 @@ jobs:
           MODULE_PATH=${{ github.repository }}
           rm README.md
           mv .github/README_template.md README.md
-          sed -i "s/{MODULE_NAME}/$MODULE_NAME/g" README.md
-          sed -i "s/{MODULE_DESCRIPTION}/$MODULE_DESCRIPTION/g" README.md
-          sed -i "s/{MODULE_PATH}/$MODULE_PATH/g" README.md
+          sed -i "s|{MODULE_NAME}|$MODULE_NAME|g" README.md
+          sed -i "s|{MODULE_DESCRIPTION}|$MODULE_DESCRIPTION|g" README.md
+          sed -i "s|{MODULE_PATH}|$MODULE_PATH|g" README.md
 
       - name: Update LICENSE
         run: |

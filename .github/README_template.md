@@ -3,15 +3,13 @@
 {MODULE_DESCRIPTION}
 
 [![Build Status](https://img.shields.io/github/actions/workflow/status/{MODULE_PATH}/ci.yml?branch=main&logo=github&style=flat-square)](https://github.com/{MODULE_PATH}/actions/workflows/ci.yml)
-
-[![CI](https://github.com/{MODULE_PATH}/actions/workflows/ci.yml/badge.svg)](https://github.com/{MODULE_PATH}/actions/workflows/ci.yml)
 [![PowerShell Gallery](https://img.shields.io/powershellgallery/v/{MODULE_NAME}.svg)](https://www.powershellgallery.com/packages/{MODULE_NAME})
 [![Downloads](https://img.shields.io/powershellgallery/dt/{MODULE_NAME}.svg)](https://www.powershellgallery.com/packages/{MODULE_NAME})
 [![License](https://img.shields.io/github/license/{MODULE_PATH})](LICENSE)
 
 ## 📂 Project Structure
 
-```
+```plaintext
 {MODULE_NAME}/
 ├── 📄 {MODULE_NAME}.build.ps1       # Invoke-Build script with all build tasks
 ├── 📄 requirements.psd1             # PSDepend configuration for dependencies
@@ -51,12 +49,14 @@
 ### Quick Start
 
 1. **Clone or use this template:**
+
    ```bash
    git clone https://github.com/{MODULE_PATH}.git {MODULE_NAME}
    cd {MODULE_NAME}
    ```
 
-2. **Install dependencies:**
+1. **Install dependencies:**
+
    ```powershell
    # Install PSDepend if not already installed
    Install-Module -Name PSDepend -Scope CurrentUser -Force
@@ -65,7 +65,8 @@
    Invoke-PSDepend -Path ./requirements.psd1 -Install -Import -Force
    ```
 
-3. **Build and test:**
+1. **Build and test:**
+
    ```powershell
    # Run default build (Clean + Build)
    Invoke-Build
@@ -123,6 +124,7 @@ Invoke-Pester -Configuration @{
 ### Test Output
 
 All test results are saved to `test-results/` directory:
+
 - `unit-tests.xml` - Pester test results (NUnit XML)
 - `code-coverage.xml` - Code coverage report (Cobertura)
 - `static-code-analysis.xml` - PSScriptAnalyzer results
@@ -138,8 +140,9 @@ Invoke-Build Export-CommandHelp
 ```
 
 Help files are generated in two formats:
+
 1. **Markdown** (`.md`) - Stored in `docs/help/` for web/GitHub viewing
-2. **MAML** (`.xml`) - Stored in module's `en-US/` folder for `Get-Help` command
+1. **MAML** (`.xml`) - Stored in module's `en-US/` folder for `Get-Help` command
 
 ### Using Help in PowerShell
 
@@ -162,11 +165,11 @@ The template includes a comprehensive CI/CD pipeline that runs automatically on 
 The CI workflow orchestrates multiple jobs in parallel:
 
 1. **Setup** - Caches PowerShell module dependencies for faster builds
-2. **Unit Tests** - Runs Pester tests with code coverage reporting
-3. **Static Code Analysis** - Validates code with PSScriptAnalyzer rules
-4. **Code Injection Analysis** - Scans for injection vulnerabilities with InjectionHunter
-5. **Semantic Code Analysis** - Runs CodeQL security analysis
-6. **Build** - Compiles module, generates help, creates releases, and publishes to PowerShell Gallery
+1. **Unit Tests** - Runs Pester tests with code coverage reporting
+1. **Static Code Analysis** - Validates code with PSScriptAnalyzer rules
+1. **Code Injection Analysis** - Scans for injection vulnerabilities with InjectionHunter
+1. **Semantic Code Analysis** - Runs CodeQL security analysis
+1. **Build** - Compiles module, generates help, creates releases, and publishes to PowerShell Gallery
 
 ### Workflow Triggers
 
@@ -180,7 +183,7 @@ The CI workflow orchestrates multiple jobs in parallel:
 The pipeline automatically determines the build type:
 
 | Event | Build Type | Version Format | Published |
-|-------|-----------|----------------|-----------|
+| ----- | ---------- | -------------- | --------- |
 | Pull Request | Debug | `1.2.3-PullRequest1234` | No |
 | Push to main | Prerelease | `1.2.3-Prerelease` | Yes |
 | Manual (workflow_dispatch) | Release | `1.2.3` | Optional |
@@ -200,7 +203,7 @@ This template uses **Semantic Versioning** (SemVer) with automated version manag
 Include one of these keywords in your commit message:
 
 | Keyword | Version Change | Example |
-|---------|----------------|---------|
+| ------- | -------------- | ------- |
 | `+semver: breaking` or `+semver: major` | Major (1.0.0 → 2.0.0) | Breaking changes |
 | `+semver: feature` or `+semver: minor` | Minor (1.0.0 → 1.1.0) | New features |
 | `+semver: fix` or `+semver: patch` | Patch (1.0.0 → 1.0.1) | Bug fixes |
@@ -220,6 +223,7 @@ git commit -m "Update README +semver: none"
 ### Creating New Functions
 
 1. **Create function file** in `src/Public/` or `src/Private/`:
+
    ```powershell
    # src/Public/Get-Something.ps1
    function Get-Something {
@@ -247,7 +251,8 @@ git commit -m "Update README +semver: none"
    }
    ```
 
-2. **Create test file** alongside function:
+1. **Create test file** alongside function:
+
    ```powershell
    # src/Public/Get-Something.Tests.ps1
    BeforeAll {
@@ -262,13 +267,15 @@ git commit -m "Update README +semver: none"
    }
    ```
 
-3. **Update module manifest** if adding public function:
+1. **Update module manifest** if adding public function:
+
    ```powershell
    # Add to FunctionsToExport in PSScriptModule.psd1
    FunctionsToExport = @('Get-PSScriptModuleInfo', 'Get-Something')
    ```
 
-4. **Build and test**:
+1. **Build and test**:
+
    ```powershell
    Invoke-Build Test
    ```
@@ -276,11 +283,11 @@ git commit -m "Update README +semver: none"
 ### Making Changes
 
 1. Create feature branch: `git checkout -b feature/my-feature`
-2. Make your changes
-3. Run tests: `Invoke-Build Test`
-4. Commit with semver keyword: `git commit -m "Add feature +semver: minor"`
-5. Push and create Pull Request
-6. After PR merge, automatic release is triggered
+1. Make your changes
+1. Run tests: `Invoke-Build Test`
+1. Commit with semver keyword: `git commit -m "Add feature +semver: minor"`
+1. Push and create Pull Request
+1. After PR merge, automatic release is triggered
 
 ## 📦 Publishing to PowerShell Gallery
 
@@ -293,6 +300,7 @@ Invoke-Build -ReleaseType Release -NugetApiKey 'YOUR-API-KEY'
 ### Automated Publishing (CI/CD)
 
 Configure your GitHub repository secrets:
+
 - `NUGETAPIKEY_PSGALLERY` - Your PowerShell Gallery API key
 
 The CI/CD pipeline will automatically publish on release.
@@ -302,12 +310,13 @@ The CI/CD pipeline will automatically publish on release.
 You can manually trigger builds and releases via GitHub Actions workflow dispatch:
 
 1. **Navigate to Actions** → CI workflow
-2. **Click "Run workflow"** 
-3. **Configure options**:
+1. **Click "Run workflow"**
+1. **Configure options**:
    - `version-tag`: Specify a version tag to build (e.g., `v0.9.7`) - leave empty to use current commit
    - `publish`: Check to publish the release to PowerShell Gallery
 
 This is useful for:
+
 - Creating releases from specific commits or tags
 - Re-publishing existing versions
 - Testing release workflows before merging to main
@@ -315,6 +324,7 @@ This is useful for:
 ## 🤝 Contributing
 
 We welcome contributions! Please see our [CONTRIBUTING.md](CONTRIBUTING.md) guide for:
+
 - How to report issues
 - Pull request process
 - Code style guidelines
@@ -323,6 +333,7 @@ We welcome contributions! Please see our [CONTRIBUTING.md](CONTRIBUTING.md) guid
 ## 🤖 AI Agent Support
 
 This repository includes special documentation for AI coding assistants. See [AGENTS.md](AGENTS.md) for:
+
 - Project structure and conventions
 - Function templates and patterns
 - Testing guidelines
@@ -333,7 +344,7 @@ This repository includes special documentation for AI coding assistants. See [AG
 This template uses the following PowerShell modules:
 
 | Module | Version | Purpose |
-|--------|---------|---------|
+| ------ | ------- | ------- |
 | **InvokeBuild** | 5.14.22 | Build orchestration |
 | **ModuleBuilder** | 3.1.8 | Module compilation |
 | **Pester** | 5.7.1 | Testing framework |
@@ -347,59 +358,6 @@ All dependencies are managed through `requirements.psd1` and can be installed wi
 
 This project is licensed under the terms specified in the [LICENSE](LICENSE) file.
 
-## 🌟 Features in Detail
-
-### PSScriptAnalyzer Integration
-
-Enforces PowerShell best practices and catches common mistakes:
-- Cmdlet design rules
-- Performance optimizations
-- Security best practices
-- Custom rule configurations via `PSScriptAnalyzerSettings.psd1`
-
-### InjectionHunter Security
-
-Scans for common injection vulnerabilities:
-- Command injection risks
-- Script injection patterns
-- Unsafe variable usage
-- SQL injection patterns (if applicable)
-
-### ModuleBuilder
-
-Compiles your script module:
-- Combines all `.ps1` files into single `.psm1`
-- Updates module version automatically
-- Copies required files to output
-- Optimizes module loading
-
-### PlatyPS Documentation
-
-Generates professional documentation:
-- Markdown help files for each command
-- MAML files for PowerShell's Get-Help
-- Module-level documentation
-- Example sections for usage
-
-### CodeQL Semantic Analysis
-
-Advanced security scanning with GitHub CodeQL:
-- Runs weekly on a schedule
-- Integrates with GitHub Security tab
-- Detects complex security vulnerabilities
-- Provides actionable security insights
-
-### Automated Maintenance Workflows
-
-Keep your repository clean with automated maintenance:
-- **Artifact Cleanup**: Automatically removes artifacts older than 2 days (configurable)
-- **Workflow Run Cleanup**: Removes old workflow runs to keep history manageable
-  - Configurable retention period (default: 2 days)
-  - Configurable minimum runs to keep (default: 2)
-  - Separate cleanup for pull requests, pushes, and scheduled runs
-- Runs daily at midnight via cron schedule
-- Can be triggered manually with custom parameters
-
 ## 🎓 Learning Resources
 
 - [PowerShell Best Practices](https://docs.microsoft.com/en-us/powershell/scripting/developer/cmdlet/cmdlet-development-guidelines)
@@ -411,8 +369,8 @@ Keep your repository clean with automated maintenance:
 ## 🆘 Support
 
 - 📖 Check the [CONTRIBUTING.md](CONTRIBUTING.md) guide
-- 🐛 [Report issues](https://github.com/WarehouseFinds/PSScriptModule.Template/issues)
-- 💬 [Start a discussion](https://github.com/WarehouseFinds/PSScriptModule.Template/discussions)
+- 🐛 [Report issues](https://github.com/{MODULE_PATH}/issues)
+- 💬 [Start a discussion](https://github.com/{MODULE_PATH}/discussions)
 
 ---
 
