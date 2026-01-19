@@ -24,16 +24,30 @@ jobs:
     if: ${{ !github.event.repository.is_template }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
-      - id: current_state
+
+      - name: Determine current state
+        id: current_state
         run: |
           if [ -f ./PSScriptModule.build.ps1 ]; then
             echo "state=BOOTSTRAP_NEW_REPO" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Read repository description
+        uses: actions/github-script@v7
+        id: repo
+        with:
+          script: |
+            const repo = await github.rest.repos.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+            core.setOutput('description', repo.data.description || '');
+
     outputs:
       current_state: ${{ steps.current_state.outputs.state }}
+      description: ${{ steps.repo.outputs.description }}
 
   on_start:
     name: On start
@@ -78,6 +92,7 @@ jobs:
             Author = "${{ github.repository_owner }}"
             CompanyName = "${{ github.repository_owner }}"
             Copyright = "(c) ${{ github.repository_owner }}. All rights reserved."
+            Description = "${{ needs.get_repo_state.outputs.description }}"
             RootModule = "${{ github.event.repository.name }}.psm1"
             Description = "${{ github.event.repository.name }}"
             ProjectUri = "https://github.com/${{ github.repository }}"
@@ -89,7 +104,18 @@ jobs:
       - name: Update README.md
         run: |
           MODULE_NAME=${{ github.event.repository.name }}
-          sed -i "s/PSScriptModule/$MODULE_NAME/g" README.md
+          MODULE_DESCRIPTION="${{ needs.get_repo_state.outputs.description }}"
+          MODULE_PATH=${{ github.repository }}
+          rm README.md
+          mv .github/README_template.md README.md
+          sed -i "s/{MODULE_NAME}/$MODULE_NAME/g" README.md
+          sed -i "s/{MODULE_DESCRIPTION}/$MODULE_DESCRIPTION/g" README.md
+          sed -i "s/{MODULE_PATH}/$MODULE_PATH/g" README.md
+
+      - name: Update LICENSE
+        run: |
+          OWNER=${{ github.repository_owner }}
+          sed -i "s/Warehouse Finds/$OWNER/g" LICENSE
 
       - name: Update devcontainer.json
         run: |
