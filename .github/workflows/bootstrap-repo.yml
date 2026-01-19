@@ -1,0 +1,108 @@
+name: Boostrap once on new repository
+
+# This step triggers after the learner creates a new repository from the template.
+# This workflow updates from step 0 to step 1.
+
+# This will run every time we create push a commit to `main`.
+# Reference: https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+# Reference: https://docs.github.com/en/actions/security-guides/automatic-token-authentication
+permissions:
+  # Need `contents: read` to checkout the repository.
+  # Need `contents: write` to update the step metadata.
+  contents: write
+
+jobs:
+  # Get the current step to only run the main job when the learner is on the same step.
+  get_repo_state:
+    name: Check current repository state
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - id: current_state
+        run: |
+          if [ -f ./PSScriptModule.build.ps1 ]; then
+            echo "state=BOOTSTRAP_NEW_REPO" >> "$GITHUB_OUTPUT"
+          fi
+
+    outputs:
+      current_state: ${{ steps.current_state.outputs.state }}
+
+  on_start:
+    name: On start
+    needs: get_repo_state
+
+    # We will only run this action when:
+    # 1. This repository isn't the template repository.
+    # 2. The step is currently 0.
+    # Reference: https://docs.github.com/en/actions/learn-github-actions/contexts
+    # Reference: https://docs.github.com/en/actions/learn-github-actions/expressions
+    if: >-
+      ${{ !github.event.repository.is_template
+          && needs.get_repo_state.outputs.current_state == 'BOOTSTRAP_NEW_REPO'}}
+
+    # We'll run Ubuntu for performance instead of Mac or Windows.
+    runs-on: ubuntu-latest
+
+    steps:
+      # We'll need to check out the repository so that we can edit the README.
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Let's get all the branches.
+
+      # Renane PSScriptModule.build.ps1 to MODULE_NAME.build.ps1
+      - name: Rename build file to match module name
+        run: |
+          MODULE_NAME=${{ github.event.repository.name }}
+          git mv PSScriptModule.build.ps1 "$MODULE_NAME.build.ps1"
+          sed -i "s/PSScriptModule/$MODULE_NAME/g" "$MODULE_NAME.build.ps1"
+
+      - name: Generate new module manifest
+        shell: pwsh
+        run: |
+          # Remove existing module manifest
+          [void] (Remove-Item "src/PSScriptModule.psd1")
+
+          # Create new module manifest
+          $Params = @{
+            Path = "src/${{ github.event.repository.name }}.psd1"
+            Guid = [guid]::NewGuid().ToString()
+            Author = "${{ github.repository_owner }}"
+            CompanyName = "${{ github.repository_owner }}"
+            Copyright = "(c) ${{ github.repository_owner }}. All rights reserved."
+            RootModule = "${{ github.event.repository.name }}.psm1"
+            Description = "${{ github.event.repository.name }}"
+            ProjectUri = "https://github.com/${{ github.repository }}"
+            LicenseUri = "https://github.com/${{ github.repository }}/blob/main/LICENSE"
+            ReleaseNotes = "https://github.com/${{ github.repository }}/releases"
+          }
+          [void] (New-ModuleManifest @Params)
+
+      - name: Update README.md
+        run: |
+          MODULE_NAME=${{ github.event.repository.name }}
+          sed -i "s/PSScriptModule/$MODULE_NAME/g" README.md
+
+      - name: Update devcontainer.json
+        run: |
+          MODULE_NAME=${{ github.event.repository.name }}
+          sed -i "s/PSScriptModule/$MODULE_NAME/g" .devcontainer/devcontainer.json
+
+      - name: Remove this workflow file
+        run: |
+          rm .github/workflows/bootstrap-repo.yml
+
+      - name: Commit changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -am "chore: bootstrap repository for ${{ github.event.repository.name }}"
+          git push
