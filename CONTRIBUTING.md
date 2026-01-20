@@ -1,6 +1,6 @@
-# Contributing to PSScriptModule.Template
+# Contributing to PSScriptModule
 
-Thank you for your interest in contributing to PSScriptModule.Template! This document provides guidelines and instructions for contributing to this project.
+Thank you for your interest in contributing to PSScriptModule! This document provides guidelines and instructions for contributing to this project.
 
 ## Code of Conduct
 
