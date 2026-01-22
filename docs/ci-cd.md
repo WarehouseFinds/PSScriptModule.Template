@@ -188,7 +188,7 @@ Calculated version: 1.3.0
 
 1. **PowerShell Gallery Account**: [Register here](https://www.powershellgallery.com/)
 2. **API Key**: Generate in your PSGallery account settings
-3. **GitHub Secret**: Store API key as `NUGETAPIKEY_PSGALLERY` in repository secrets
+3. **GitHub Secret**: Store API key as `PSGALLERY_API_KEY` in repository secrets
 
 ### Setting Up Publishing
 
