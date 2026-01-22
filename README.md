@@ -47,7 +47,7 @@ If you’ve ever thought *“I just want to write PowerShell, not build pipeline
 
 ## 📦 Features
 
-When you create a module from this template, you get a fully wired, production-ready PowerShell module from day one.
+When you create a module from this template, you get a fully wired, production-ready PowerShell module from day one. But wait, there’s more!
 
 ### ✅ CI/CD Ready
 
@@ -85,11 +85,14 @@ When you create a module from this template, you get a fully wired, production-r
 
 ```plaintext
 PSScriptModule/
+├── 📄 .devcontainer/                // Devcontainer configuration for VS Code
+├── 📄 .github/                      // GitHub Actions workflows and issue templates
+│   ├── 📁 workflows/                // CI/CD pipeline definitions
+│   └── 📁 ISSUE_TEMPLATE/           // Issue and pull request templates
+├── 📄 .vscode/                      // VS Code workspace settings and recommended extensions
 ├── 📄 PSScriptModule.build.ps1      // Invoke-Build script with all build tasks
 ├── 📄 requirements.psd1             // PSDepend configuration for dependencies
 ├── 📄 gitversion.yml                // GitVersion configuration
-├── 📄 CONTRIBUTING.md               // Contribution guidelines
-├── 📄 AGENTS.md                     // AI agent instructions
 ├── 📁 src/                          // Source code
 │   ├── 📄 PSScriptModule.psd1       // Module manifest
 │   ├── 📁 Classes/                  // Classes definitions
@@ -98,11 +101,7 @@ PSScriptModule/
 ├── 📁 tests/                        // Test suites
 │   ├── 📁 PSScriptAnalyzer/         // Static code analysis tests
 │   └── 📁 InjectionHunter/          // Security vulnerability tests
-├── 📁 docs/help/                    // Markdown documentation
-└── 📁 build/                        // Build output (generated)
-    ├── 📁 src/                      // Copied source for building
-    ├── 📁 out/                      // Compiled module output
-    └── 📁 help/                     // Generated help files
+├── 📁 docs/                         // Markdown documentation
 ```
 
 ## 🚀 Getting Started
@@ -173,31 +172,33 @@ After setup, customize your module:
 
 1. **Push your changes** and open a pull request to trigger CI/CD workflows
 
-## Documentation
+## 📘 Documentation
 
-See the [documentation guides](docs/) for detailed information on:
+Comprehensive documentation is available in the [`docs/`](docs/) directory:
 
-- [Building](docs/building.md)
-- [Testing](docs/testing.md)
-- [Generating Help](docs/generating-help.md)
-- [Publishing](docs/publishing.md)
+- 🚀 **[Getting Started Guide](docs/getting-started.md)** - Initial setup, prerequisites, and your first function
+- 🛠️ **[Development Guide](docs/development.md)** - Creating functions, building, testing, and generating help
+- 🔄 **[CI/CD & Publishing Guide](docs/ci-cd.md)** - Automated pipelines, versioning, and PowerShell Gallery publishing
+
+
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [CONTRIBUTING](CONTRIBUTING.md) guide for:
+Contributions are welcome! Whether it’s bug fixes, improvements, or ideas for new features, your input helps make this template better for everyone. Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on:
 
-- Pull request process
-- Code style guidelines
-- Testing requirements
+- Pull request workflow
+- Code style and conventions
+- Testing and quality requirements
 
-## Like this project?
+## ⭐ Support This Project
 
-If you find this template useful, please consider supporting it by:
+If this template saves you time or helps your projects succeed, consider supporting it:
 
-- **Star this repository** if you find it useful
-- **Share it** with other PowerShell developers
-- **Provide feedback** via issues or discussions
-- **Sponsor development** via GitHub Sponsors
+- ⭐ Star the repository to show your support
+- 🔁 Share it with other PowerShell developers
+- 💬 Provide feedback via issues or discussions
+- ❤️ Sponsor ongoing development via GitHub Sponsors
+
 
 ---
 
