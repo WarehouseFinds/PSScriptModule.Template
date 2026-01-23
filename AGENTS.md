@@ -1,334 +1,208 @@
-# AI Agents Guide for PSScriptModule.Template
+# AI Coding Agent Guidelines
 
-This document provides guidance for AI coding agents (like GitHub Copilot, Cursor, or other AI assistants) working with this PowerShell module template project.
-
-## Project Overview
-
-**Project Type**: PowerShell Script Module Template  
-**Language**: PowerShell  
-**Build System**: Invoke-Build  
-**Testing Framework**: Pester  
-**Code Analysis**: PSScriptAnalyzer  
-**Documentation**: PlatyPS (markdown-based help)
-
-## Project Structure
-
-```plaintext
-PSScriptModule.Template/
-├── src/                          # Source code
-│   ├── PSScriptModule.psd1      # Module manifest
-│   ├── Public/                   # Public functions (exported)
-│   └── Private/                  # Private functions (internal)
-├── tests/                        # Test suites
-│   ├── PSScriptAnalyzer/        # Code analysis tests
-│   └── InjectionHunter/         # Security tests
-├── docs/help/                    # Markdown documentation
-├── PSScriptModule.build.ps1     # Build script
-├── requirements.psd1            # Dependencies (PSDepend)
-└── gitversion.yml              # Versioning configuration
-```
-
-## Key Conventions
-
-### File Naming
-
-- Public functions: `Verb-Noun.ps1` in `src/Public/`
-- Private functions: `VerbNoun.ps1` in `src/Private/`
-- Test files: `*.Tests.ps1` alongside source files
-- Help files: `Verb-Noun.md` in `docs/help/`
-
-### Function Structure
-
-- Use approved PowerShell verbs (Get, Set, New, Remove, etc.)
-- Include `[CmdletBinding()]` attribute
-- Add comprehensive comment-based help
-- Use parameter validation attributes
-- Follow begin/process/end blocks when appropriate
-
-### Testing Requirements
-
-- Every function must have corresponding `.Tests.ps1` file
-- Use Pester framework (v5+)
-- Organize tests with Describe/Context/It blocks
-- Test both success and failure scenarios
-- Mock external dependencies
-
-### Code Quality
-
-- Must pass PSScriptAnalyzer with default rules
-- Follow PSScriptAnalyzerSettings.psd1 configuration
-- Check for security issues (injection attacks, etc.)
-- No hard-coded credentials or sensitive data
-
-## Build Tasks
-
-Available Invoke-Build tasks:
-
-```powershell
-Invoke-Build                          # Default: Clean + Build
-Invoke-Build Clean                    # Remove build artifacts
-Invoke-Build Build                    # Build the module
-Invoke-Build Test                     # Run all tests
-Invoke-Build Invoke-PSScriptAnalyzer  # Run static analysis
-Invoke-Build Invoke-Pester            # Run Pester tests
-```
-
-## AI Agent Instructions
-
-### When Creating New Functions
-
-1. **Placement**:
-   - Public functions → `src/Public/Verb-Noun.ps1`
-   - Private functions → `src/Private/VerbNoun.ps1`
-
-1. **Function Template**:
-
-   ```powershell
-   function Verb-Noun {
-       <#
-       .SYNOPSIS
-           Brief one-line description
-       
-       .DESCRIPTION
-           Detailed description of what the function does
-       
-       .PARAMETER ParameterName
-           Description of the parameter
-       
-       .EXAMPLE
-           Verb-Noun -ParameterName 'Value'
-           Description of what this example demonstrates
-       
-       .OUTPUTS
-           Type of output returned (if any)
-       
-       .NOTES
-           Additional information
-       #>
-       [CmdletBinding()]
-       param (
-           [Parameter(Mandatory)]
-           [ValidateNotNullOrEmpty()]
-           [string]
-           $ParameterName
-       )
-       
-       begin {
-           Write-Verbose "Starting $($MyInvocation.MyCommand)"
-       }
-       
-       process {
-           try {
-               # Implementation here
-           }
-           catch {
-               Write-Error "Error in $($MyInvocation.MyCommand): $_"
-               throw
-           }
-       }
-       
-       end {
-           Write-Verbose "Completed $($MyInvocation.MyCommand)"
-       }
-   }
-   ```
-
-1. **Create Test File**:
-
-   ```powershell
-   BeforeAll {
-       # Import the function
-       . $PSCommandPath.Replace('.Tests.ps1', '.ps1')
-   }
-   
-   Describe 'Verb-Noun' {
-       Context 'Parameter Validation' {
-           It 'Should throw when ParameterName is null or empty' {
-               { Verb-Noun -ParameterName '' } | Should -Throw
-           }
-       }
-       
-       Context 'Functionality' {
-           It 'Should return expected result' {
-               $result = Verb-Noun -ParameterName 'test'
-               $result | Should -Not -BeNullOrEmpty
-           }
-       }
-   }
-   ```
-
-### When Modifying Existing Code
-
-1. **Verify Tests**: Ensure existing tests still pass
-1. **Update Tests**: Add new tests for new functionality
-1. **Update Help**: Regenerate markdown help if function signature changes
-1. **Check Analysis**: Run PSScriptAnalyzer to verify compliance
-1. **Semantic Versioning**: Include appropriate `+semver:` keyword in commits
-
-### Code Quality Checklist
-
-Before completing any code changes, verify:
-
-- [ ] Function uses approved PowerShell verb
-- [ ] Parameter validation attributes are used
-- [ ] Comment-based help is complete and accurate
-- [ ] `.Tests.ps1` file exists with adequate coverage
-- [ ] Code passes `Invoke-Build Invoke-PSScriptAnalyzer`
-- [ ] All tests pass with `Invoke-Build Test`
-- [ ] No hard-coded paths or credentials
-- [ ] Error handling is implemented with try/catch
-- [ ] Verbose output is provided for troubleshooting
-- [ ] Function is added to FunctionsToExport in .psd1 (if public)
-
-### Common Patterns
-
-**Error Handling**:
-
-```powershell
-try {
-    # Operation
-}
-catch {
-    Write-Error "Failed to perform operation: $_"
-    throw
-}
-```
-
-**Verbose Output**:
-
-```powershell
-Write-Verbose "Performing action on $Target"
-```
-
-**Parameter Validation**:
-
-```powershell
-[Parameter(Mandatory)]
-[ValidateNotNullOrEmpty()]
-[ValidateScript({ Test-Path $_ })]
-[string]
-$Path
-```
-
-**Should Process (for destructive operations)**:
-
-```powershell
-[CmdletBinding(SupportsShouldProcess)]
-param()
-
-if ($PSCmdlet.ShouldProcess($Target, "Operation")) {
-    # Perform operation
-}
-```
-
-### Dependencies
-
-Install required modules via PSDepend:
-
-```powershell
-Invoke-PSDepend -Path ./requirements.psd1 -Install -Import -Force
-```
-
-Key dependencies:
-
-- **InvokeBuild**: Build orchestration
-- **Pester**: Testing framework
-- **PSScriptAnalyzer**: Static code analysis
-- **platyPS**: Help documentation generation
-
-### Versioning Strategy
-
-- Uses GitVersion with GitHub Flow
-- Every PR merge to `main` creates a new release
-- Control version bumps with commit message keywords:
-    - `+semver: major` - Breaking changes (1.0.0 → 2.0.0)
-    - `+semver: minor` - New features (1.0.0 → 1.1.0)
-    - `+semver: patch` - Bug fixes (1.0.0 → 1.0.1)
-    - `+semver: none` - No version change
-
-### Testing Commands
-
-```powershell
-# Run all tests
-Invoke-Build Test
-
-# Run specific test file
-Invoke-Pester -Path ./src/Public/Get-PSScriptModuleInfo.Tests.ps1
-
-# Run with code coverage
-Invoke-Pester -Configuration @{
-    CodeCoverage = @{
-        Enabled = $true
-        Path = './src/**/*.ps1'
-    }
-}
-
-# Run PSScriptAnalyzer
-Invoke-ScriptAnalyzer -Path ./src -Recurse
-```
-
-## Best Practices for AI Agents
-
-1. **Always run tests** after making changes
-1. **Follow existing patterns** in the codebase
-1. **Don't remove or modify** PSScriptAnalyzer suppressions without understanding them
-1. **Update documentation** when changing function signatures
-1. **Use approved verbs** from `Get-Verb` output
-1. **Avoid aliases** in production code (use full cmdlet names)
-1. **Include examples** in help documentation
-1. **Handle errors explicitly** with try/catch blocks
-1. **Add verbose output** for debugging
-1. **Test edge cases** including null/empty inputs
-
-## Resources
-
-- [PowerShell Best Practices](https://docs.microsoft.com/en-us/powershell/scripting/developer/cmdlet/cmdlet-development-guidelines)
-- [Pester Documentation](https://pester.dev/)
-- [PSScriptAnalyzer Rules](https://github.com/PowerShell/PSScriptAnalyzer)
-- [PlatyPS Documentation](https://github.com/PowerShell/platyPS)
-- [Semantic Versioning](https://semver.org/)
-
-## Quick Reference
-
-### File Operations
-
-```powershell
-# Create new public function
-New-Item -Path ./src/Public/Get-Something.ps1 -ItemType File
-
-# Create test file
-New-Item -Path ./src/Public/Get-Something.Tests.ps1 -ItemType File
-```
-
-### Build Operations
-
-```powershell
-# Clean build
-Invoke-Build Clean
-
-# Full build
-Invoke-Build
-
-# Test only
-Invoke-Build Test
-
-# Release build
-Invoke-Build -ReleaseType Release
-```
-
-### Module Operations
-
-```powershell
-# Import module for testing
-Import-Module ./src/PSScriptModule.psd1 -Force
-
-# Get module info
-Get-Module PSScriptModule
-
-# Remove module
-Remove-Module PSScriptModule
-```
+This document provides guidance for AI coding assistants (Copilot, Claude, etc.) when generating code in this repository.  
+All code should be **production-ready, maintainable, tested, and auditable**.
 
 ---
 
-**Note for AI Agents**: This project follows enterprise PowerShell development standards. Always prioritize code quality, testing, and documentation. When in doubt, follow existing patterns in the codebase.
+## Purpose
+
+AI agents must generate code that:
+
+- Preserves existing behavior and public APIs
+- Follows PowerShell best practices
+- Includes proper testing, validation, and error handling
+- Is readable, secure, and auditable
+- Can be integrated into CI/CD pipelines without modification
+
+---
+
+## Hard Rules (Must Follow)
+
+- Preserve original exception types and stack traces; never throw strings instead of exceptions
+- Maintain function parameter validation (`[ValidateNotNullOrEmpty()]`, `[ValidateScript()]`, etc.)
+- Do not remove or bypass existing tests, analyzers, or security scans
+- Avoid writing secrets, credentials, or environment-specific paths in code
+- Use approved PowerShell verbs (`Get-Verb`) and proper file naming
+- Always create a `.Tests.ps1` file for each new function
+- Follow begin/process/end pattern for functions that support pipeline input
+- Do not use aliases in production code (e.g., `gci` instead of `Get-ChildItem`)
+- Always include `[CmdletBinding()]` in public functions
+
+---
+
+## Coding Patterns and Conventions
+
+### Function Structure
+
+**Public Functions** (exported):
+
+- Location: `src/Public/Verb-Noun.ps1`
+- Naming: `Verb-Noun` (approved verbs only)
+- Must have comment-based help
+- Must support pipeline input and `-WhatIf` for destructive operations
+
+**Private Functions** (internal):
+
+- Location: `src/Private/VerbNoun.ps1`
+- Naming: descriptive; not exported
+- Used to keep public APIs stable
+
+---
+
+### Error Handling (Recommended Pattern)
+
+Use this simple pattern for all functions:
+
+    try {
+        $result = Invoke-Operation
+    }
+    catch {
+        # Human-readable message
+        Write-Verbose "$($MyInvocation.MyCommand) Operation failed: $_"
+        # Full stack trace for debugging
+        Write-Verbose "StackTrace: $($_.ScriptStackTrace)"
+        # Preserve original exception
+        throw $_
+    }
+
+**Notes:**
+
+- Preserves exception type and stack trace
+- Safe for nested function calls
+- Verbose logging provides context without double logging
+- Optional: append function name chain if deeper context is needed
+
+---
+
+### Parameter Validation
+
+    param (
+        [Parameter(Mandatory, ValueFromPipeline)]
+        [ValidateNotNullOrEmpty()]
+        [string]$Name
+    )
+
+- Always validate inputs at function boundaries
+- Use `[ValidateSet()]`, `[ValidateScript()]`, or `[ValidatePattern()]` when applicable
+
+---
+
+### Pipeline Support
+
+- Use `begin {}`, `process {}`, `end {}` blocks for pipeline processing
+- Collect results in `begin { $results = [System.Collections.Generic.List[object]]::new() }`
+- Return results in `end { return $results }`
+
+---
+
+### Comment-Based Help Template
+
+    function Verb-Noun {
+        <#
+        .SYNOPSIS
+            One-line description
+
+        .DESCRIPTION
+            Detailed description
+
+        .PARAMETER Name
+            Description of parameter
+
+        .EXAMPLE
+            Verb-Noun -Name 'Test'
+
+        .OUTPUTS
+            Type returned
+
+        .NOTES
+            Additional notes
+        #>
+    }
+
+---
+
+## Testing Guidelines
+
+- Every function must have a corresponding `.Tests.ps1` file
+- Use Pester 5+ for unit tests
+- Test **both success and failure scenarios**
+- Mock external dependencies as needed
+- Ensure code coverage ≥ 80%
+- Do not bypass tests or analyzers
+
+**Example Test Structure:**
+
+    Describe 'Verb-Noun' {
+        Context 'Parameter Validation' {
+            It 'Should require mandatory parameters' { { Verb-Noun } | Should -Throw }
+        }
+        Context 'Functionality' {
+            It 'Should return expected result' { 
+                $result = Verb-Noun -Name 'Test'
+                $result | Should -Not -BeNullOrEmpty
+            }
+        }
+    }
+
+---
+
+## CI/CD and Quality
+
+- Ensure PSScriptAnalyzer passes with no errors
+- Security scans must pass
+- Automated pipelines should run tests and build checks on every pull request
+- Maintain semantic versioning with proper commit messages
+
+---
+
+## Quick Reference for AI Agents
+
+- Preserve **behavior, types, and stack traces**
+- Always include **parameter validation**
+- Use `[CmdletBinding()]` and `-WhatIf` support
+- Throw original exceptions; log context in `Write-Verbose`
+- Keep code **readable, maintainable, and auditable**
+- Write tests for every new function
+- Follow approved PowerShell verbs and naming conventions
+- Use `begin/process/end` for pipeline support
+- Do not write secrets or environment-specific values
+
+---
+
+## Example AI-Friendly Function Template
+
+    function Get-Something {
+        [CmdletBinding()]
+        param (
+            [Parameter(Mandatory, ValueFromPipeline)]
+            [ValidateNotNullOrEmpty()]
+            [string]$Name
+        )
+
+        begin { Write-Verbose "Starting $($MyInvocation.MyCommand)" }
+
+        process {
+            try {
+                # Implementation goes here
+            }
+            catch {
+                Write-Verbose "$($MyInvocation.MyCommand) failed: $_"
+                Write-Verbose "StackTrace: $($_.ScriptStackTrace)"
+                throw $_
+            }
+        }
+
+        end { Write-Verbose "Completed $($MyInvocation.MyCommand)" }
+    }
+
+---
+
+✅ **Summary:**  
+
+Follow this document when generating code in this repository. This ensures:
+
+- Consistent, maintainable, and auditable code
+- Proper error handling and logging
+- Pipeline-friendly, tested, and secure functions
+- AI agents generate **safe and production-ready** code without human rework

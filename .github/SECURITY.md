@@ -22,7 +22,7 @@ We take the security of PSScriptModule seriously. If you believe you have found 
 
 1. **Report via GitHub Security Advisories**:
     - Navigate to the repository's "Security" tab
-    - Click "Report a vulnerability"
+    - Click "Advisories" and then "New draft security advisory"
     - Provide detailed information about the vulnerability
 
 1. **Include in Your Report**:
