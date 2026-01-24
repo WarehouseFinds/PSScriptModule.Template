@@ -1,0 +1,38 @@
+name: Resolve PowerShell Dependencies
+description: Resolve module dependencies from requirements.psd1 and output a comma-separated list
+outputs:
+  module-list:
+    description: Comma-separated list of modules to cache
+    value: ${{ steps.resolve.outputs.module-list }}
+runs:
+  using: composite
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v6
+      with:
+        repository: ${{ github.repository }}
+    - name: Resolve module dependencies
+      id: resolve
+      shell: pwsh
+      run: |
+        $moduleRequirements = Import-PowerShellDataFile -Path './requirements.psd1'
+        $moduleList = foreach ($module in $moduleRequirements.GetEnumerator()) {
+            $moduleName = $module.Key
+            $moduleInfo = $module.Value
+
+            $name = if ($moduleInfo.Repository -and $moduleInfo.Repository -ne 'PSGallery') {
+                "$($moduleInfo.Repository)\$moduleName"
+            }
+            else {
+                $moduleName
+            }
+
+            if ($moduleInfo.Version -and $moduleInfo.Version -ne 'latest') {
+                "$name`:$($moduleInfo.Version)"
+            }
+            else {
+                $name
+            }
+        }
+        $moduleList = $moduleList | Sort-Object | Join-String -Separator ','
+        "module-list=$moduleList" | Out-File -FilePath $env:GITHUB_OUTPUT -Append

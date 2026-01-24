@@ -1,0 +1,39 @@
+name: Run PSScriptAnalyzer
+description: Execute static code analysis and publish results
+inputs:
+  module-list:
+    description: Comma-separated list of PowerShell modules to cache
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v6
+      with:
+        repository: ${{ github.repository }}
+
+    - name: Install and cache PowerShell modules
+      uses: potatoqualitee/psmodulecache@ee5e9494714abf56f6efbfa51527b2aec5c761b8 #v6.2.1
+      with:
+        modules-to-cache: ${{ inputs.module-list }}
+        shell: pwsh
+        updatable: false
+
+    - name: Run Static Code Analysis via Invoke-Build
+      shell: pwsh
+      run: |
+        Set-StrictMode -Version Latest
+        Invoke-Build -Task Invoke-PSScriptAnalyzer
+
+    - name: Publish Static Code Analysis Results
+      uses: EnricoMi/publish-unit-test-result-action@27d65e188ec43221b20d26de30f4892fad91df2f #v2.22.0
+      if: (!cancelled())
+      with:
+        check_run: false
+        check_name: ">> Report: PSScriptAnalyzer"
+        check_run_annotations	: all tests, skipped tests
+        job_summary: true
+        comment_title: PSScriptAnalyzer Report
+        comment_mode: off
+        files: |
+          test-results/static-code-analysis.xml

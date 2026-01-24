@@ -1,0 +1,69 @@
+name: Run Pester Unit Tests
+description: Execute Pester unit tests with coverage and publish results
+inputs:
+  module-list:
+    description: Comma-separated list of PowerShell modules to cache
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v6
+      with:
+        repository: ${{ github.repository }}
+
+    - name: Install and cache PowerShell modules
+      uses: potatoqualitee/psmodulecache@ee5e9494714abf56f6efbfa51527b2aec5c761b8 #v6.2.1
+      with:
+        modules-to-cache: ${{ inputs.module-list }}
+        shell: pwsh
+        updatable: false
+
+    - name: Run Unit Tests via Invoke-Build
+      shell: pwsh
+      run: |
+        Set-StrictMode -Version Latest
+        Invoke-Build -Task Invoke-UnitTests
+
+    - name: Publish Unit Test Results
+      if: ${{ runner.os == 'Linux' }}
+      uses: EnricoMi/publish-unit-test-result-action@27d65e188ec43221b20d26de30f4892fad91df2f #v2.22.0
+      with:
+        job_summary: true
+        check_run: false
+        comment_mode: off
+        fail_on: test failures
+        files: |
+          test-results/unit-tests.xml
+
+    - name: Setup .NET Core for ReportGenerator
+      if: ${{ runner.os == 'Linux' }}
+      uses: actions/setup-dotnet@baa11fbfe1d6520db94683bd5c7a3818018e4309 #v5.1
+      with:
+        dotnet-version: 10.x
+        dotnet-quality: 'ga'
+
+    - name: Run ReportGenerator on Code Coverage Report
+      if: ${{ runner.os == 'Linux' }}
+      uses: danielpalme/ReportGenerator-GitHub-Action@ee0ae774f6d3afedcbd1683c1ab21b83670bdf8e #5.5.1
+      with:
+        reports: 'test-results/codecoverage/code-coverage.xml'
+        targetdir: 'test-results/codecoverage/report'
+        reporttypes: 'HtmlInline;MarkdownSummaryGithub'
+        sourcedirs: 'src'
+        verbosity: 'Info'
+        tag: '${{ github.event_name }}[${{ github.ref }}]_SHA[${{ github.sha }}]'
+        toolpath: 'reportgeneratortool'
+
+    - name: Publish code coverage summary
+      if: ${{ runner.os == 'Linux' }}
+      shell: bash
+      run: |
+        cat test-results/codecoverage/report/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
+
+    - name: Upload coverage report artifact
+      if: ${{ runner.os == 'Linux' }}
+      uses: actions/upload-artifact@v6
+      with:
+        name: CoverageReport
+        path: test-results/codecoverage/report

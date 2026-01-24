@@ -37,12 +37,26 @@ jobs:
 
   setup:
     name: Setup
-    uses: .github/workflows/ps-resolve-dependencies.yml
+    runs-on: ubuntu-latest
+    outputs:
+      module-list: ${{ steps.resolve.outputs.module-list }}
+    steps:
+      - name: Resolve dependencies
+        id: resolve
+        uses: ./.github/actions/ps-resolve-dependencies
 
   unit-tests:
     name: Unit Tests
     needs: [setup]
-    uses: .github/workflows/ps-unit-tests.yml
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - name: Run Pester Unit Tests
+        uses: ./.github/actions/ps-unit-tests
+        with:
+          module-list: ${{ needs.setup.outputs.module-list }}
     permissions:
       issues: write
       pull-requests: write
@@ -53,7 +67,12 @@ jobs:
   static-code-analysis:
     name: Static Code Analysis
     needs: [setup]
-    uses: .github/workflows/ps-static-code-analysis.yml
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run PSScriptAnalyzer
+        uses: ./.github/actions/ps-static-code-analysis
+        with:
+          module-list: ${{ needs.setup.outputs.module-list }}
     permissions:
       issues: write
       pull-requests: write
@@ -64,7 +83,12 @@ jobs:
   code-injection:
     name: Code Injection
     needs: [setup]
-    uses: .github/workflows/ps-code-injection.yml
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run InjectionHunter
+        uses: ./.github/actions/ps-code-injection
+        with:
+          module-list: ${{ needs.setup.outputs.module-list }}
     permissions:
       issues: write
       pull-requests: write
@@ -75,7 +99,10 @@ jobs:
   semantic-code-analysis:
     name: Semantic Code Analysis
     needs: [setup]
-    uses: .github/workflows/github-codeQL.yml
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run CodeQL
+        uses: ./.github/actions/github-codeQL
     permissions:
       security-events: write
       actions: read
@@ -85,7 +112,16 @@ jobs:
   build:
     name: Build
     needs: [setup, unit-tests, static-code-analysis, code-injection, semantic-code-analysis]
-    uses: .github/workflows/ps-build.yml
+    runs-on: ubuntu-latest
+    outputs:
+      release-version: ${{ steps.build.outputs.release-version }}
+    steps:
+      - name: Build Module
+        id: build
+        uses: ./.github/actions/ps-build
+        with:
+          release-type: 'Debug'
+          module-list: ${{ needs.setup.outputs.module-list }}
     permissions:
       contents: write
     with:

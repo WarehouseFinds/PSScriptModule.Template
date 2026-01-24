@@ -1,0 +1,90 @@
+name: Release PowerShell Module
+description: Create GitHub release and optionally publish to PSGallery
+inputs:
+  release-type:
+    description: Release type
+    required: true
+  release-version:
+    description: Release version
+    required: true
+  publish-psgallery:
+    description: Publish to PowerShell Gallery
+    required: true
+  publish-nugetorg:
+    description: Publish to NuGet.org (not implemented)
+    required: true
+  module-list:
+    description: Comma-separated list of PowerShell modules to cache
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v6
+      with:
+        repository: ${{ github.repository }}
+
+    - name: Restore cached PowerShell modules
+      uses: potatoqualitee/psmodulecache@ee5e9494714abf56f6efbfa51527b2aec5c761b8 #v6.2.1
+      with:
+        modules-to-cache: ${{ inputs.module-list }}
+        shell: pwsh
+        updatable: false
+
+    - name: Restore build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: build-v${{ inputs.release-version }}
+        path: build
+
+    - name: Display structure of downloaded files
+      shell: bash
+      run: ls -R build
+
+    - name: Generate release notes
+      shell: pwsh
+      id: generate_release_notes
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      run: |
+        git fetch --tags
+        $previousTag = (git tag --sort=-v:refname)[0]
+        $uri = "https://api.github.com/repos/${{ github.repository }}/releases/generate-notes"
+        $body = @{
+          tag_name = "v${{ inputs.release-version }}"
+          target_commitish = "main"
+          previous_tag_name = $previousTag
+        }
+        $requestParams = @{
+          Method      = 'Post'
+          Uri         = $uri
+          Headers     = @{
+            Authorization = "Bearer ${{ env.GITHUB_TOKEN }}"
+            Accept        = 'application/vnd.github+json'
+          }
+          Body        = ($body | ConvertTo-Json -Depth 3)
+          ContentType = 'application/json'
+        }
+        $result = Invoke-RestMethod @requestParams
+        Write-Output 'releaseNotes<<EOF' >> $env:GITHUB_OUTPUT
+        Write-Output ($result.body.ToString()) >> $env:GITHUB_OUTPUT
+        Write-Output 'EOF' >> $env:GITHUB_OUTPUT
+
+    - name: Create release
+      uses: ncipollo/release-action@v1
+      with:
+        name: Release v${{ inputs.release-version }}
+        tag: v${{ inputs.release-version }}
+        body: ${{ steps.generate_release_notes.outputs.releaseNotes }}
+        prerelease: ${{ inputs.release-type == 'Prerelease' }}
+        allowUpdates: true
+
+    - name: Publish build package to PSGallery
+      if: ${{ inputs.publish-psgallery == 'true' && env.PSGALLERY_API_KEY != '' }}
+      shell: pwsh
+      env:
+        PSGALLERY_API_KEY: ${{ env.PSGALLERY_API_KEY }}
+      run: |
+        Set-StrictMode -Version Latest
+        [void] (Import-Module InvokeBuild)
+        Invoke-Build -NugetApiKey ${{ env.PSGALLERY_API_KEY }} -Task Publish

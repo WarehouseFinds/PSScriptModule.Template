@@ -1,0 +1,105 @@
+name: Build PowerShell Module
+description: Build module, generate help, and upload artifacts
+inputs:
+  module-list:
+    description: Comma-separated list of PowerShell modules to cache
+    required: true
+  release-type:
+    description: Type of release (Release, Prerelease, Debug)
+    default: Debug
+    required: false
+outputs:
+  build-version:
+    description: Semantic build version
+    value: ${{ steps.compute.outputs.build-version }}
+  release-version:
+    description: Release version from GitVersion
+    value: ${{ steps.gitversion.outputs.majorMinorPatch }}
+runs:
+  using: composite
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v6
+      with:
+        repository: ${{ github.repository }}
+        fetch-depth: 0
+
+    - name: Install GitVersion tool
+      uses: gittools/actions/gitversion/setup@d0139503a9321f76b4a417dfdc8aebcec24decdd #v4.2.0
+      with:
+        versionSpec: '6.5.1'
+
+    - name: Get semantic build version
+      id: gitversion
+      uses: gittools/actions/gitversion/execute@d0139503a9321f76b4a417dfdc8aebcec24decdd #v4.2.0
+      with:
+        configFilePath: GitVersion.yml
+        disableShallowCloneCheck: true
+
+    - name: Restore cached PowerShell modules
+      uses: potatoqualitee/psmodulecache@ee5e9494714abf56f6efbfa51527b2aec5c761b8 #v6.2.1
+      with:
+        modules-to-cache: ${{ inputs.module-list }}
+        shell: pwsh
+        updatable: false
+
+    - name: Determine build version
+      id: compute
+      shell: pwsh
+      run: |
+        switch ('${{ inputs.release-type }}') {
+            'Release' {
+                $buildVersion = '${{ steps.gitversion.outputs.semVer }}'.Split('-', 2)[0]
+            }
+            'Prerelease' {
+                $buildVersion = '${{ steps.gitversion.outputs.semVer }}'.Split('-', 2)[0] + '-Prerelease'
+            }
+            'Debug' {
+                $buildVersion = '${{ steps.gitversion.outputs.semVer }}'
+            }
+        }
+        echo "build-version=$buildVersion" >> $env:GITHUB_OUTPUT
+
+    - name: Run build via Invoke-Build
+      shell: pwsh
+      run: |
+        Set-StrictMode -Version Latest
+        [void] (Import-Module InvokeBuild)
+        $requestParam = @{
+            SemanticVersion = '${{ steps.compute.outputs.build-version }}'
+            Task            = 'Build'
+        }
+        Invoke-Build @requestParam
+
+    - name: Run Export-CommandHelp via Invoke-Build
+      shell: pwsh
+      run: |
+        Set-StrictMode -off
+        [void] (Import-Module InvokeBuild)
+        $requestParam = @{
+            SemanticVersion = '${{ steps.gitversion.outputs.majorMinorPatch }}'
+            Task            = 'Export-CommandHelp'
+        }
+        Invoke-Build @requestParam
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v6
+      if: (!cancelled())
+      with:
+        name: build-v${{ steps.gitversion.outputs.majorMinorPatch }}
+        path: build
+        if-no-files-found: warn
+
+    - name: Commit generated help
+      if: ${{ github.ref_name == 'main' && github.event_name == 'push' }}
+      shell: bash
+      run: |
+        git add docs/help
+        if git diff --cached --quiet; then
+          echo "No help changes to commit"
+          exit 0
+        fi
+        git config user.name  "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git commit -m "Update PowerShell help for release v${{ steps.gitversion.outputs.majorMinorPatch }}"
+        git push origin HEAD:main
