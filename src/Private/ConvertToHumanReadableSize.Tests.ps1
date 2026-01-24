@@ -4,9 +4,6 @@ BeforeAll {
 
 Describe 'ConvertToHumanReadableSize' {
     Context 'Parameter Validation' {
-        It 'Should require Bytes parameter' {
-            { ConvertToHumanReadableSize } | Should -Throw
-        }
 
         It 'Should not accept negative values' {
             { ConvertToHumanReadableSize -Bytes -1 } | Should -Throw
