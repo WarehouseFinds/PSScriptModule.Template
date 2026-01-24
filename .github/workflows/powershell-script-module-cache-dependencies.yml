@@ -1,16 +1,16 @@
-name: '[template] PS Cache Dependencies'
+name: '[template] PS Resolve Dependencies'
 permissions: read-all
 on:
   workflow_call:
     outputs:
       module-list: 
         description: 'Comma-separated list of PowerShell modules to install and cache'
-        value: ${{ jobs.setup-powershell-dependencies.outputs.module-list }}
+        value: ${{ jobs.resolve-powershell-dependencies.outputs.module-list }}
 
 jobs:
-  setup-powershell-dependencies:
+  resolve-powershell-dependencies:
     name: Dependencies
-    runs-on: [ubuntu-latest]
+    runs-on: ubuntu-latest
     outputs:
       module-list: ${{ steps.resolve-dependencies.outputs.module-list }}
     steps:
@@ -23,7 +23,6 @@ jobs:
         id: resolve-dependencies
         shell: pwsh
         run: |
-          # Resolve module dependencies from requirements.psd1
           $moduleRequirements = Import-PowerShellDataFile -Path './requirements.psd1'
           $moduleList = foreach ($module in $moduleRequirements.GetEnumerator()) {
               $moduleName = $module.Key
@@ -45,20 +44,3 @@ jobs:
           }
           $moduleList = $moduleList | Sort-Object | Join-String -Separator ','
           "module-list=$moduleList" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-
-      - name: Install and cache PowerShell modules
-        uses: potatoqualitee/psmodulecache@ee5e9494714abf56f6efbfa51527b2aec5c761b8 #v6.2.1
-        with:
-          modules-to-cache: ${{ steps.resolve-dependencies.outputs.module-list }}
-          shell: pwsh
-          updatable: false
-
-      - name: Verify installed modules
-        shell: pwsh
-        run: |
-          # Verify that required modules are installed
-          $moduleRequirements = Import-PowerShellDataFile -Path './requirements.psd1'
-          foreach ($moduleName in $moduleRequirements.Keys) {
-              Get-Module -ListAvailable -Name $moduleName -ErrorAction Stop
-          }
-

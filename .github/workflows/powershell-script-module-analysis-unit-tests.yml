@@ -14,7 +14,12 @@ jobs:
       pull-requests: write
       checks: write
     name: Pester
-    runs-on: [ubuntu-latest]
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    # We need to run on Ubuntu, Windows and MacOS to ensure cross-platform compatibility
+    # Using matrix strategy to define OSes
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 #v6.01
@@ -35,6 +40,7 @@ jobs:
           Invoke-Build -Task Invoke-UnitTests
 
       - name: Publish Unit Test Results
+        if: matrix.os == 'ubuntu-latest'
         uses: EnricoMi/publish-unit-test-result-action@27d65e188ec43221b20d26de30f4892fad91df2f #v2.22.0
         with:
           job_summary: true
@@ -45,12 +51,14 @@ jobs:
             test-results/unit-tests.xml
 
       - name: Setup .NET Core for ReportGenerator
+        if: matrix.os == 'ubuntu-latest'
         uses: actions/setup-dotnet@baa11fbfe1d6520db94683bd5c7a3818018e4309 #v5.1
         with:
           dotnet-version: 10.x
           dotnet-quality: 'ga'
 
       - name: Run ReportGenerator on Code Coverage Report
+        if: matrix.os == 'ubuntu-latest'
         uses: danielpalme/ReportGenerator-GitHub-Action@ee0ae774f6d3afedcbd1683c1ab21b83670bdf8e #5.5.1
         with:
           reports: 'test-results/codecoverage/code-coverage.xml'
@@ -62,10 +70,11 @@ jobs:
           toolpath: 'reportgeneratortool'
 
       - name: Publish code coverage summary
-        shell: bash
+        if: matrix.os == 'ubuntu-latest'  # Only need to publish once
         run: cat test-results/codecoverage/report/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
 
       - name: Upload coverage report artifact
+        if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v6
         with:
           name: CoverageReport
