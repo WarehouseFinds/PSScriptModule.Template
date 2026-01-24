@@ -1,3 +1,6 @@
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Justification = 'Variables used in Pester test contexts')]
+param()
+
 BeforeAll {
     . $PSCommandPath.Replace('.Tests.ps1', '.ps1')
 

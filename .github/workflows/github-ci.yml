@@ -37,12 +37,12 @@ jobs:
 
   setup:
     name: Setup
-    uses: WarehouseFinds/PSScriptModule/.github/workflows/powershell-script-module-cache-dependencies.yml@main
+    uses: .github/workflows/ps-resolve-dependencies.yml
 
   unit-tests:
     name: Unit Tests
     needs: [setup]
-    uses: WarehouseFinds/PSScriptModule/.github/workflows/powershell-script-module-analysis-unit-tests.yml@main
+    uses: .github/workflows/ps-analysis-unit-tests.yml
     permissions:
       issues: write
       pull-requests: write
@@ -53,7 +53,7 @@ jobs:
   static-code-analysis:
     name: Static Code Analysis
     needs: [setup]
-    uses: WarehouseFinds/PSScriptModule/.github/workflows/powershell-script-module-analysis-static-code.yml@main
+    uses: .github/workflows/ps-analysis-static-code.yml
     permissions:
       issues: write
       pull-requests: write
@@ -64,7 +64,7 @@ jobs:
   code-injection:
     name: Code Injection
     needs: [setup]
-    uses: WarehouseFinds/PSScriptModule/.github/workflows/powershell-script-module-analysis-code-injection.yml@main
+    uses: .github/workflows/ps-analysis-code-injection.yml
     permissions:
       issues: write
       pull-requests: write
@@ -75,7 +75,7 @@ jobs:
   semantic-code-analysis:
     name: Semantic Code Analysis
     needs: [setup]
-    uses: WarehouseFinds/PSScriptModule/.github/workflows/powershell-script-module-analysis-codeQL.yml@main
+    uses: .github/workflows/ps-analysis-codeQL.yml
     permissions:
       security-events: write
       actions: read
@@ -85,7 +85,7 @@ jobs:
   build:
     name: Build
     needs: [setup, unit-tests, static-code-analysis, code-injection, semantic-code-analysis]
-    uses: WarehouseFinds/PSScriptModule/.github/workflows/powershell-script-module-build.yml@main
+    uses: .github/workflows/ps-build.yml
     permissions:
       contents: write
     with:

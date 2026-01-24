@@ -63,11 +63,13 @@ graph TD
 #### 4. Security Scans
 
 **InjectionHunter:**
+
 - Scans for SQL/Command/Script injection vulnerabilities
 - Checks for unsafe string concatenation
 - Validates input sanitization
 
 **CodeQL:**
+
 - Semantic code analysis
 - Detects security vulnerabilities
 - Runs weekly scheduled scans
@@ -97,7 +99,7 @@ For documentation-only changes, the workflow intelligently skips unnecessary job
 # CI automatically skips tests for:
 - *.md files
 - docs/** files
-- .github/** workflow files (except changes to ci.yml itself)
+- .github/** workflow files (except changes to github-ci.yml itself)
 ```
 
 ## Versioning Strategy
@@ -127,11 +129,11 @@ Examples:
 Add semantic versioning keywords to commit messages:
 
 | Keyword | Version Change | Example | Use Case |
-|---------|---------------|---------|----------|
-| `+semver: breaking` or `+semver: major` | 1.0.0 → 2.0.0 | Breaking API changes |
-| `+semver: feature` or `+semver: minor` | 1.0.0 → 1.1.0 | New features (backward compatible) |
-| `+semver: fix` or `+semver: patch` | 1.0.0 → 1.0.1 | Bug fixes |
-| `+semver: none` or `+semver: skip` | No change | Documentation updates |
+| --------- | --------------- | --------- | ---------- |
+| `+semver: breaking` or `+semver: major` | 1.0.0 → 2.0.0 | Breaking API changes | Major release |
+| `+semver: feature` or `+semver: minor` | 1.0.0 → 1.1.0 | New features (backward compatible) | Minor release |
+| `+semver: fix` or `+semver: patch` | 1.0.0 → 1.0.1 | Bug fixes | Patch release |
+| `+semver: none` or `+semver: skip` | No change | Documentation updates | No version bump |
 
 ### Commit Message Examples
 
@@ -177,7 +179,7 @@ Calculated version: 1.3.0
 ### Build Types
 
 | Build Context | Version Format | Published | Use Case |
-|---------------|---------------|-----------|----------|
+| --------------- | --------------- | ----------- | ---------- |
 | **Release** | `1.2.3` | ✅ PowerShell Gallery | Production releases |
 | **Prerelease** | `1.2.3-alpha.5` | ⚠️ Optional | Testing releases |
 | **Debug** | `1.2.3-PullRequest.123` | ❌ Never | Development/PR builds |
@@ -321,6 +323,7 @@ Manual Workflow Dispatch
 The CI workflow automatically creates GitHub Releases:
 
 **On main branch:**
+
 - Creates release with version tag
 - Generates release notes from merged PRs
 - Attaches module package as artifact

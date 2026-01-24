@@ -1,4 +1,4 @@
-name: '[template] PS Code Injection Analysis'
+name: 'PS Code Injection Analysis'
 on:
   workflow_call:
     inputs:

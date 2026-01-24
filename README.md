@@ -4,8 +4,8 @@
 
 A production-ready PowerShell module template with built-in CI/CD, testing, versioning, and publishing workflows using GitHub Actions.
 
-[![CI](https://github.com/WarehouseFinds/PSScriptModule/actions/workflows/ci.yml/badge.svg)](https://github.com/WarehouseFinds/PSScriptModule/actions/workflows/ci.yml)
-[![Code Coverage](https://img.shields.io/github/actions/workflow/status/WarehouseFinds/PSScriptModule/ci.yml?branch=main&label=code%20coverage)](https://github.com/WarehouseFinds/PSScriptModule/actions/workflows/ci.yml)
+[![CI](https://github.com/WarehouseFinds/PSScriptModule/actions/workflows/github-ci.yml/badge.svg)](https://github.com/WarehouseFinds/PSScriptModule/actions/workflows/github-ci.yml)
+[![Code Coverage](https://img.shields.io/github/actions/workflow/status/WarehouseFinds/PSScriptModule/github-ci.yml?branch=main&label=code%20coverage)](https://github.com/WarehouseFinds/PSScriptModule/actions/workflows/github-ci.yml)
 [![PowerShell Gallery](https://img.shields.io/powershellgallery/v/PSScriptModule.svg)](https://www.powershellgallery.com/packages/PSScriptModule)
 [![Downloads](https://img.shields.io/powershellgallery/dt/PSScriptModule.svg)](https://www.powershellgallery.com/packages/PSScriptModule)
 [![License](https://img.shields.io/github/license/WarehouseFinds/PSScriptModule)](LICENSE)

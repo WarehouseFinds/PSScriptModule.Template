@@ -27,12 +27,12 @@ on:
 jobs:
   setup:
     name: Setup
-    uses: WarehouseFinds/PSScriptModule/.github/workflows/powershell-script-module-cache-dependencies.yml@main
+    uses: .github/workflows/ps-resolve-dependencies.yml
 
   build:
     name: Build
     needs: [setup]
-    uses: WarehouseFinds/PSScriptModule/.github/workflows/powershell-script-module-build.yml@main
+    uses: .github/workflows/ps-build.yml
     permissions:
       contents: write
     with:
@@ -42,7 +42,7 @@ jobs:
   release:
     name: Release
     needs: [setup, build]
-    uses: WarehouseFinds/PSScriptModule/.github/workflows/powershell-script-module-release.yml@main
+    uses: .github/workflows/ps-release.yml
     permissions:
       contents: write
     with:
