@@ -47,6 +47,8 @@ function Get-ModuleMetadata {
     #>
     [CmdletBinding()]
     [OutputType([PSCustomObject])]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '', Justification = 'Metadata is conceptually singular')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseOutputTypeCorrectly', '', Justification = 'Function returns PSCustomObject items from internal List collection')]
     param (
         [Parameter(
             Mandatory,
@@ -76,9 +78,7 @@ function Get-ModuleMetadata {
 
                 # Fail fast: Validate path exists
                 if (-not (Test-Path -Path $itemPath)) {
-                    $errorMessage = "Path does not exist: $itemPath"
-                    Write-Error $errorMessage
-                    throw $errorMessage
+                    throw "Path does not exist: $itemPath"
                 }
 
                 # Resolve to manifest file
@@ -107,7 +107,6 @@ function Get-ModuleMetadata {
 
                 # Build result object
                 $metadata = [PSCustomObject]@{
-                    PSTypeName        = 'PSScriptModule.ModuleMetadata'
                     Name              = $manifest.Name
                     Version           = $manifest.Version.ToString()
                     Author            = $manifest.Author
@@ -119,6 +118,7 @@ function Get-ModuleMetadata {
                     ExportedCmdlets   = $manifest.ExportedCmdlets.Keys.Count
                     Path              = $manifestPath
                 }
+                $metadata.PSObject.TypeNames.Insert(0, 'PSScriptModule.ModuleMetadata')
 
                 # Add size information if requested
                 if ($IncludeSize) {
@@ -130,10 +130,9 @@ function Get-ModuleMetadata {
                 $results.Add($metadata)
                 Write-Verbose "Successfully processed: $($manifest.Name)"
             } catch {
-                $errorMessage = "Failed to process module metadata from '$itemPath': $_"
-                Write-Verbose $errorMessage
-                Write-Verbose "Error details: $($_.ScriptStackTrace)"
-                throw
+                Write-Verbose "$($MyInvocation.MyCommand) Failed to process '$itemPath': $_"
+                Write-Verbose "StackTrace: $($_.ScriptStackTrace)"
+                throw $_
             }
         }
     }

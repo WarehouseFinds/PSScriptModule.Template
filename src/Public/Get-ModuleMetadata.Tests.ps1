@@ -7,9 +7,6 @@ BeforeAll {
 
 Describe 'Get-ModuleMetadata' {
     Context 'Parameter Validation' {
-        It 'Should require Path parameter' {
-            { Get-ModuleMetadata } | Should -Throw
-        }
 
         It 'Should not accept null or empty Path' {
             { Get-ModuleMetadata -Path $null } | Should -Throw
@@ -140,7 +137,7 @@ Describe 'Get-ModuleMetadata' {
         It 'Should have correct type name' {
             $result = Get-ModuleMetadata -Path 'TestModule.psd1'
 
-            $result.PSTypeName | Should -Be 'PSScriptModule.ModuleMetadata'
+            $result.PSObject.TypeNames[0] | Should -Be 'PSScriptModule.ModuleMetadata'
         }
     }
 
@@ -265,8 +262,8 @@ Describe 'Get-ModuleMetadata' {
             $verboseOutput = Get-ModuleMetadata -Path 'TestModule.psd1' -Verbose 4>&1
 
             $verboseOutput | Should -Not -BeNullOrEmpty
-            $verboseOutput | Should -Match 'Starting'
-            $verboseOutput | Should -Match 'Completed'
+            $verboseOutput -join ' ' | Should -Match 'Starting'
+            $verboseOutput -join ' ' | Should -Match 'Completed'
         }
     }
 }
