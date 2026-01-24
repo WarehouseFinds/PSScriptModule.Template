@@ -14,11 +14,6 @@ jobs:
     outputs:
       module-list: ${{ steps.resolve-dependencies.outputs.module-list }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 #v6.01
-        with:
-          repository: ${{ github.repository }}
-
       - name: Resolve module dependencies
         id: resolve-dependencies
         shell: pwsh

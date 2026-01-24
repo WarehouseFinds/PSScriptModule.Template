@@ -41,6 +41,10 @@ jobs:
     outputs:
       module-list: ${{ steps.resolve.outputs.module-list }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ github.repository }}
       - name: Resolve dependencies
         id: resolve
         uses: ./.github/actions/ps-resolve-dependencies
@@ -57,6 +61,8 @@ jobs:
       pull-requests: write
       checks: write
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
       - name: Run Pester Unit Tests
         uses: ./.github/actions/ps-unit-tests
         with:
@@ -71,6 +77,8 @@ jobs:
       pull-requests: write
       checks: write
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
       - name: Run PSScriptAnalyzer
         uses: ./.github/actions/ps-static-code-analysis
         with:
@@ -85,6 +93,8 @@ jobs:
       pull-requests: write
       checks: write
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
       - name: Run InjectionHunter
         uses: ./.github/actions/ps-code-injection
         with:
@@ -100,6 +110,8 @@ jobs:
       contents: read
       packages: read
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
       - name: Run CodeQL
         uses: ./.github/actions/github-codeQL
 
@@ -112,6 +124,8 @@ jobs:
     outputs:
       release-version: ${{ steps.build.outputs.release-version }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
       - name: Build Module
         id: build
         uses: ./.github/actions/ps-build

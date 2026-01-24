@@ -7,10 +7,6 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: Checkout repository
-      uses: actions/checkout@v6
-      with:
-        repository: ${{ github.repository }}
     - name: Resolve module dependencies
       id: resolve
       shell: pwsh

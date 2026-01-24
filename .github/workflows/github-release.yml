@@ -31,6 +31,8 @@ jobs:
     outputs:
       module-list: ${{ steps.resolve.outputs.module-list }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
       - name: Resolve dependencies
         id: resolve
         uses: ./.github/actions/ps-resolve-dependencies
@@ -39,20 +41,19 @@ jobs:
     name: Build
     needs: [setup]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     outputs:
       release-version: ${{ steps.build.outputs.release-version }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
       - name: Build Module
         id: build
         uses: ./.github/actions/ps-build
         with:
           release-type: ${{ inputs['release-type'] }}
           module-list: ${{ needs.setup.outputs.module-list }}
-    permissions:
-      contents: write
-    with:
-      release-type: ${{ inputs['release-type'] }}
-      module-list: ${{ needs.setup.outputs.module-list }}
 
   release:
     name: Release
@@ -71,6 +72,9 @@ jobs:
         uses: ./.github/actions/ps-release
         with:
           release-type: ${{ inputs['release-type'] }}
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
           release-version: ${{ needs.build.outputs.release-version }}
           publish-psgallery: ${{ inputs.publish-psgallery }}
           publish-nugetorg: ${{ inputs.publish-nugetorg }}

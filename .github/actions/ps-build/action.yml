@@ -18,12 +18,6 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: Checkout repository
-      uses: actions/checkout@v6
-      with:
-        repository: ${{ github.repository }}
-        fetch-depth: 0
-
     - name: Install GitVersion tool
       uses: gittools/actions/gitversion/setup@d0139503a9321f76b4a417dfdc8aebcec24decdd #v4.2.0
       with:
