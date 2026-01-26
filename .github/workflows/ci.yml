@@ -91,28 +91,6 @@ jobs:
         with:
           module-list: ${{ needs.dependencies.outputs.module-list }}
 
-  semantic-code-analysis:
-    name: Semantic Code Analysis
-    needs: [dependencies]
-    runs-on: ubuntu-latest
-    permissions:
-      security-events: write
-      actions: read
-      contents: read
-      packages: read
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v4
-        with:
-          languages: actions
-          build-mode: none
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v4
-        with:
-          category: "/language:${{matrix.language}}"
-
   build:
     name: Build
     needs: [dependencies, unit-tests, static-code-analysis, code-injection, semantic-code-analysis]

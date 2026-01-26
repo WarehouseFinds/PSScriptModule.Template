@@ -16,9 +16,8 @@ permissions:
   contents: write
 
 jobs:
-  # Get the current step to only run the main job when the learner is on the same step.
   get_repo_state:
-    name: Check current repository state
+    name: Get repository state
     if: ${{ !github.event.repository.is_template }}
     runs-on: ubuntu-latest
     steps:
@@ -47,8 +46,8 @@ jobs:
       current_state: ${{ steps.current_state.outputs.state }}
       description: ${{ steps.repo.outputs.description }}
 
-  on_start:
-    name: On start
+  bootstrap:
+    name: Bootstrap
     needs: get_repo_state
 
     # We will only run this action when:
@@ -137,7 +136,7 @@ jobs:
       - name: Update CONTRIBUTING.md
         run: |
           MODULE_NAME=${{ github.event.repository.name }}
-          sed -i "s/PSScriptModule/$MODULE_NAME/g" .github/CONTRIBUTING.md
+          sed -i "s/PSScriptModule/$MODULE_NAME/g" CONTRIBUTING.md
 
       - name: Update LICENSE
         run: |
