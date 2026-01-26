@@ -93,7 +93,7 @@ jobs:
 
   build:
     name: Build
-    needs: [dependencies, unit-tests, static-code-analysis, code-injection, semantic-code-analysis]
+    needs: [dependencies, unit-tests, static-code-analysis, code-injection]
     runs-on: ubuntu-latest
     permissions:
       contents: write

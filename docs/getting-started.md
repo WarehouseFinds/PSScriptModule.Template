@@ -68,7 +68,7 @@ Invoke-PSDepend -Path ./requirements.psd1 -Install -Import -Force
 This installs:
 
 | Module | Purpose |
-|--------|---------|
+| -------- | --------- |
 | **InvokeBuild** | Build orchestration |
 | **ModuleBuilder** | Module compilation |
 | **Pester** | Testing framework |
