@@ -36,8 +36,8 @@ Get-Command -Module {MODULE_NAME}
 
 Comprehensive documentation is available in the [`docs/`](docs/) directory:
 
-- 📘 **[Module Help](docs/module-help.md)** - Help files for cmdlets and functions
-- 🚀 **[Getting Started Guide](docs/getting-started.md)** - Initial setup, prerequisites, and your first function
+- 📘 **[Module Help](docs/)** - Help files for cmdlets and functions
+- 🚀 **[Examples](docs/examples/)** - Practical examples and usage scenarios
 
 ## 🤝 Contributing
 
