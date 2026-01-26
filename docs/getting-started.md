@@ -120,280 +120,29 @@ YourModuleName/
 
 ## Customizing Your Module
 
-### 1. Update Module Manifest
+Quick tweaks to make the template yours. For everything beyond setup, use the Development guide.
 
-Edit `src/YourModuleName.psd1`:
+### Minimal Customization
 
-```powershell
-@{
-    # Update these fields:
-    Author = 'Your Name'
-    CompanyName = 'Your Company'
-    Copyright = '(c) 2026 Your Name. All rights reserved.'
-    Description = 'Detailed description of what your module does'
-    
-    # Add relevant tags for PowerShell Gallery
-    PrivateData = @{
-        PSData = @{
-            Tags = @('PowerShell', 'Automation', 'DevOps')
-        }
-    }
-    
-    # Set your project URLs
-    PrivateData = @{
-        PSData = @{
-            ProjectUri = 'https://github.com/YourUsername/YourModuleName'
-            LicenseUri = 'https://github.com/YourUsername/YourModuleName/blob/main/LICENSE'
-        }
-    }
-    
-    # Module version (auto-updated by GitVersion)
-    ModuleVersion = '0.1.0'
-    
-    # Functions to export (update as you add functions)
-    FunctionsToExport = @('Get-PSScriptModuleInfo')
-}
-```
+- Update manifest metadata in `src/YourModuleName.psd1` (Author, CompanyName, Description, ProjectUri, LicenseUri, tags).
+- Adjust badges and links in `README.md`.
+- Review `LICENSE` and `CONTRIBUTING.md` to match your project.
 
-### 2. Update README Badges
-
-In `README.md`, replace badge URLs:
-
-```markdown
-# Change this:
-[![CI](https://github.com/WarehouseFinds/PSScriptModule/...)]
-
-# To this:
-[![CI](https://github.com/YourUsername/YourModuleName/...)]
-```
-
-### 3. Review License
-
-Update `LICENSE` file with your preferred license and copyright information.
-
-### 4. Customize CONTRIBUTING.md
-
-Update contribution guidelines to match your project's needs.
-
-## Quick Start Commands
+## Quick Checks
 
 ```powershell
-# Build the module
-Invoke-Build                          # Clean + Build (default)
-Invoke-Build Build                    # Build only
-
-# Run tests
-Invoke-Build Test                     # Run all tests
-Invoke-Build UnitTests                # Unit tests only
-
-# Code quality
-Invoke-Build PSScriptAnalyzer         # Static analysis
-Invoke-Build InjectionHunter          # Security scan
-# Generate documentation
-Invoke-Build Export-CommandHelp       # Create help files
-
-# Clean up
-Invoke-Build Clean                    # Remove build artifacts
-```
-
-## Your First Function
-
-Let's create a simple function:
-
-### 1. Create Function File
-
-Create `src/Public/Get-Greeting.ps1`:
-
-```powershell
-function Get-Greeting {
-    <#
-    .SYNOPSIS
-        Returns a greeting message
-    
-    .DESCRIPTION
-        Generates a personalized greeting message for the specified name.
-    
-    .PARAMETER Name
-        The name to include in the greeting
-    
-    .EXAMPLE
-        Get-Greeting -Name 'World'
-        Returns: "Hello, World!"
-    
-    .OUTPUTS
-        System.String
-    #>
-    [CmdletBinding()]
-    param (
-        [Parameter(Mandatory)]
-        [ValidateNotNullOrEmpty()]
-        [string]
-        $Name
-    )
-    
-    Write-Verbose "Generating greeting for: $Name"
-    return "Hello, $Name!"
-}
-```
-
-### 2. Create Test File
-
-Create `src/Public/Get-Greeting.Tests.ps1`:
-
-```powershell
-BeforeAll {
-    # Import the function being tested
-    . $PSCommandPath.Replace('.Tests.ps1', '.ps1')
-}
-
-Describe 'Get-Greeting' {
-    Context 'Parameter Validation' {
-        It 'Should require Name parameter' {
-            { Get-Greeting } | Should -Throw
-        }
-        
-        It 'Should not accept null or empty Name' {
-            { Get-Greeting -Name '' } | Should -Throw
-            { Get-Greeting -Name $null } | Should -Throw
-        }
-    }
-    
-    Context 'Functionality' {
-        It 'Should return greeting with provided name' {
-            $result = Get-Greeting -Name 'PowerShell'
-            $result | Should -Be 'Hello, PowerShell!'
-        }
-        
-        It 'Should return string type' {
-            $result = Get-Greeting -Name 'Test'
-            $result | Should -BeOfType [string]
-        }
-    }
-}
-```
-
-### 3. Update Module Manifest
-
-Add your function to exports in `src/YourModuleName.psd1`:
-
-```powershell
-FunctionsToExport = @('Get-PSScriptModuleInfo', 'Get-Greeting')
-
-# Or use wildcard to export all Public functions:
-FunctionsToExport = '*'
-```
-
-### 4. Build and Test
-
-```powershell
-# Build the module
+# Build once to verify toolchain
 Invoke-Build
 
-# Run tests
+# (Optional) run tests
 Invoke-Build Test
-
-# Test your function
-Import-Module ./build/out/YourModuleName/YourModuleName.psd1 -Force
-Get-Greeting -Name 'PowerShell'
-```
-
-## Development Workflow
-
-### Daily Development
-
-```powershell
-# 1. Pull latest changes
-git pull origin main
-
-# 2. Create feature branch
-git checkout -b feature/my-new-feature
-
-# 3. Make your changes
-# - Add/modify functions in src/Public/ or src/Private/
-# - Add/update corresponding .Tests.ps1 files
-# - Update help documentation if needed
-
-# 4. Run tests frequently
-Invoke-Build Test
-
-# 5. Commit with semantic versioning keyword
-git commit -m "Add new feature +semver: minor"
-
-# 6. Push and create Pull Request
-git push origin feature/my-new-feature
-```
-
-### Version Control Keywords
-
-Include these in commit messages to control version bumps:
-
-- `+semver: major` - Breaking changes (1.0.0 → 2.0.0)
-- `+semver: minor` - New features (1.0.0 → 1.1.0)
-- `+semver: patch` - Bug fixes (1.0.0 → 1.0.1)
-- `+semver: none` - No version change (documentation only)
-
-## Troubleshooting
-
-### Build Failures
-
-**Problem**: `Invoke-Build` not found
-
-```powershell
-# Solution: Install InvokeBuild
-Install-Module -Name InvokeBuild -Scope CurrentUser -Force
-```
-
-**Problem**: Module dependencies not found
-
-```powershell
-# Solution: Reinstall dependencies
-Invoke-PSDepend -Path ./requirements.psd1 -Install -Import -Force
-```
-
-### Test Failures
-
-**Problem**: Pester version conflicts
-
-```powershell
-# Solution: Install correct Pester version
-Install-Module -Name Pester -RequiredVersion 5.7.1 -Force -SkipPublisherCheck
-```
-
-**Problem**: Tests can't find functions
-
-```powershell
-# Solution: Ensure dot-sourcing is correct in test file
-BeforeAll {
-    . $PSCommandPath.Replace('.Tests.ps1', '.ps1')
-}
-```
-
-### Import Issues
-
-**Problem**: Module doesn't import after building
-
-```powershell
-# Solution: Verify module manifest is valid
-Test-ModuleManifest ./build/out/YourModuleName/YourModuleName.psd1
-
-# Check for errors
-Import-Module ./build/out/YourModuleName/YourModuleName.psd1 -Verbose
-```
-
-**Problem**: Functions not exported
-
-```powershell
-# Solution: Check FunctionsToExport in manifest
-# Either list functions explicitly or use '*' for all Public functions
 ```
 
 ## Next Steps
 
-Now that you're set up, learn more about:
-
-- 📖 [Development Workflow](development.md) - Building, testing, and documentation
-- 🔄 [CI/CD & Publishing](ci-cd.md) - Automated releases and PowerShell Gallery publishing
-- 🤖 [AGENTS.md](../AGENTS.md) - Guidelines for AI coding assistants
+- 📖 Development workflow, function patterns, and tests: [development.md](development.md)
+- 🔄 CI/CD and publishing: [ci-cd.md](ci-cd.md)
+- 🤖 AI contributor guidance: [AGENTS.md](../AGENTS.md)
 
 ## Additional Resources
 

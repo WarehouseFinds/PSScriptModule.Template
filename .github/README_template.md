@@ -14,22 +14,30 @@
 **Required:**
 
 - **PowerShell 7.0+**
-- **Visual Studio Code** with PowerShell extension (recommended)
-- **Git** for version control
 
-*Optional* dependencies:
+### Installation
 
-- **GitHub Copilot** for enhanced development experience
-- **Docker or Rancher Desktop** for consistent development environments in devcontainers
-- **PowerShell Gallery account** for publishing
+Install the module from the PowerShell Gallery:
+
+```powershell
+Install-Module -Name {MODULE_NAME} -Scope CurrentUser
+```
+
+### Usage
+
+Import the module and use its commands:
+
+```powershell
+Import-Module {MODULE_NAME}
+Get-Command -Module {MODULE_NAME}
+```
 
 ## 📘 Documentation
 
 Comprehensive documentation is available in the [`docs/`](docs/) directory:
 
+- 📘 **[Module Help](docs/module-help.md)** - Help files for cmdlets and functions
 - 🚀 **[Getting Started Guide](docs/getting-started.md)** - Initial setup, prerequisites, and your first function
-- 🛠️ **[Development Guide](docs/development.md)** - Creating functions, building, testing, and generating help
-- 🔄 **[CI/CD & Publishing Guide](docs/ci-cd.md)** - Automated pipelines, versioning, and PowerShell Gallery publishing
 
 ## 🤝 Contributing
 
