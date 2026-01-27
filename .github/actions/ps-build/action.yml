@@ -96,4 +96,4 @@ runs:
         git config user.name  "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
         git commit -m "Update PowerShell help for release v${{ steps.gitversion.outputs.majorMinorPatch }}"
-        git push origin HEAD:main
+        git push
