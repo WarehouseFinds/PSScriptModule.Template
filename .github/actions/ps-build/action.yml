@@ -80,8 +80,8 @@ runs:
       uses: actions/upload-artifact@v6
       if: (!cancelled())
       with:
-        name: build-v${{ steps.gitversion.outputs.majorMinorPatch }}
-        path: build
+        name: ${{ github.event.repository.name }}-v${{ steps.gitversion.outputs.majorMinorPatch }}
+        path: build/out/${{ github.event.repository.name }}
         if-no-files-found: warn
 
     - name: Commit generated help
