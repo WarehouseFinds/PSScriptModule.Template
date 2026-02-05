@@ -3,7 +3,7 @@
 # https://github.com/actions/labeler
 
 # Path-based labels
-source:
+cmdlets:
   - changed-files:
     - any-glob-to-any-file:
       - 'src/**/*.ps1'
@@ -29,8 +29,8 @@ build:
 ci-cd:
   - changed-files:
     - any-glob-to-any-file:
-      - '.github/workflows/**/*.yml'
-      - '.github/workflows/**/*.yaml'
+      - '.github/workflows/**/*'
+      - '.github/actions/**/*'
 
 github:
   - changed-files:
