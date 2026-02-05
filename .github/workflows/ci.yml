@@ -41,6 +41,8 @@ jobs:
   dependencies:
     name: Dependencies
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
       module-list: ${{ steps.resolve.outputs.module-list }}
     steps:
@@ -60,6 +62,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     permissions:
+      contents: read
       issues: write
       pull-requests: write
       checks: write
@@ -76,6 +79,7 @@ jobs:
     needs: [dependencies]
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       issues: write
       pull-requests: write
       checks: write
@@ -92,6 +96,7 @@ jobs:
     needs: [dependencies]
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       issues: write
       pull-requests: write
       checks: write
