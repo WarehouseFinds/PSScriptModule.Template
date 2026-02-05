@@ -4,7 +4,7 @@ external help file: PSScriptModule-Help.xml
 HelpUri: https://github.com/YourUsername/PSScriptModule
 Locale: en-US
 Module Name: PSScriptModule
-ms.date: 01/26/2026
+ms.date: 02/05/2026
 PlatyPS schema version: 2024-05-01
 title: Get-ModuleMetadata
 ---
